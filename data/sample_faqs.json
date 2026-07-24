@@ -1,0 +1,42 @@
+[
+  {
+    "doc_id": "faq_returns_01",
+    "title": "Return & Refund Policy",
+    "content": "Our return policy allows customers to return any unused, unopened product within 30 days of purchase for a full refund to the original payment method. Items returned after 30 days but within 60 days are eligible for store credit only. Final sale items and digital downloads are strictly non-refundable."
+  },
+  {
+    "doc_id": "faq_shipping_02",
+    "title": "Shipping Options & Delivery Times",
+    "content": "We offer three shipping tiers: Standard Shipping (3-5 business days, $4.99 or free on orders over $50), Express Shipping (1-2 business days, $14.99), and International Shipping (7-14 business days, rates calculated at checkout). Orders placed before 12 PM EST are processed on the same day."
+  },
+  {
+    "doc_id": "faq_subscriptions_03",
+    "title": "Subscription Management & Cancellation",
+    "content": "You can modify, pause, or cancel your monthly or annual subscription at any time through your Account Dashboard under Billing & Plans. Cancellations take effect at the end of the current billing period. Prorated refunds are not issued for partial subscription months."
+  },
+  {
+    "doc_id": "faq_security_04",
+    "title": "Account Security & Two-Factor Authentication",
+    "content": "To enable Two-Factor Authentication (2FA), navigate to Account Settings > Security and scan the QR code using any authenticator app like Google Authenticator or Authy. Enter the 6-digit code to complete setup. Backup recovery codes will be generated once 2FA is activated."
+  },
+  {
+    "doc_id": "faq_tech_05",
+    "title": "Browser Compatibility & System Requirements",
+    "content": "Our web platform supports the latest versions of Google Chrome, Mozilla Firefox, Apple Safari, and Microsoft Edge. For optimal performance, ensure JavaScript and cookies are enabled. Mobile web is fully supported on iOS Safari 15+ and Android Chrome 100+."
+  },
+  {
+    "doc_id": "faq_warranty_06",
+    "title": "Product Warranty & Repair Services",
+    "content": "All hardware products carry a standard 1-Year Limited Manufacturer Warranty covering hardware defects and assembly failures. Accidental damage, liquid exposure, or unauthorized disassembly voids warranty coverage. Repair requests can be submitted via the Support Portal."
+  },
+  {
+    "doc_id": "faq_payments_07",
+    "title": "Accepted Payment Methods & Billing",
+    "content": "We accept major credit cards (Visa, MasterCard, American Express, Discover), PayPal, Apple Pay, and Google Pay. Business enterprise tier clients can request invoice billing with Net-30 payment terms by contacting corporate support."
+  },
+  {
+    "doc_id": "faq_api_08",
+    "title": "API Keys, Access & Rate Limits",
+    "content": "Developers can generate API keys from the Developer Portal. Standard API tier limits requests to 60 requests per minute and 10,000 requests per day. Exceeding these limits results in HTTP 429 Too Many Requests responses until the rate window resets."
+  }
+]

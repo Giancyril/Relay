@@ -46,11 +46,27 @@ async def chat_endpoint(request: ChatRequest):
     )
 
 
+from app.services.ingestion_service import ingestion_service
+
+
 @router.post("/ingest", response_model=IngestResponse, tags=["Ingestion"])
 async def ingest_endpoint(request: IngestRequest):
-    """Placeholder ingest endpoint - Ingestion pipeline will be connected in Step 2."""
-    return IngestResponse(
-        status="success",
-        chunks_ingested=len(request.documents),
-        total_documents=len(request.documents)
-    )
+    """
+    Ingests product knowledge base documents into ChromaDB.
+    If 'documents' is empty, automatically ingests default sample FAQs from data/sample_faqs.json.
+    """
+    try:
+        chunks_count, doc_count = ingestion_service.ingest_documents(
+            documents=request.documents,
+            reset_collection=request.reset_collection
+        )
+        return IngestResponse(
+            status="success",
+            chunks_ingested=chunks_count,
+            total_documents=doc_count
+        )
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Ingestion failed: {str(e)}"
+        )
