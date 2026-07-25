@@ -53,6 +53,7 @@ class IngestionService:
 
                 metadata = {
                     "doc_id": doc.doc_id,
+                    "source": doc.doc_id,   # alias used by rag_service for attribution
                     "title": doc.title,
                     "chunk_index": idx,
                     "total_chunks": len(chunks)

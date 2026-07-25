@@ -60,3 +60,8 @@ class EmbeddingService:
 
 
 embedding_service = EmbeddingService()
+
+
+def get_embeddings(texts: List[str]) -> List[List[float]]:
+    """Module-level shortcut: embed a list of texts via the shared EmbeddingService."""
+    return embedding_service.embed_documents(texts)

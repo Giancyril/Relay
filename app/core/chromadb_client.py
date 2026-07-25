@@ -42,3 +42,8 @@ class ChromaDBClient:
 
 
 get_chroma_client = ChromaDBClient
+
+
+def get_collection():
+    """Convenience helper — returns the default ChromaDB collection."""
+    return ChromaDBClient().get_or_create_collection()
