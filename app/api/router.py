@@ -1,4 +1,6 @@
+import json
 import logging
+import os
 
 from fastapi import APIRouter, HTTPException, status
 
@@ -11,6 +13,7 @@ from app.config import settings
 from app.core.chromadb_client import ChromaDBClient
 from app.services.ingestion_service import ingestion_service
 from app.services.rag_service import query_rag
+from app.services.escalation_logger import escalation_logger
 
 logger = logging.getLogger(__name__)
 router = APIRouter()
@@ -121,4 +124,39 @@ async def ingest_endpoint(request: IngestRequest):
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Ingestion failed: {exc}",
+        )
+
+
+# ---------------------------------------------------------------------------
+# Escalations  (Step 4: inspect logged low-confidence queries)
+# ---------------------------------------------------------------------------
+
+@router.get("/escalations", tags=["Escalations"])
+async def list_escalations(limit: int = 50):
+    """
+    Return the most recent escalated queries from the escalation log.
+
+    These are queries the agent couldn't answer confidently — useful for
+    identifying knowledge gaps and improving the knowledge base.
+
+    Args:
+        limit: Max number of records to return (newest first). Default 50.
+    """
+    log_path = escalation_logger._log_path
+
+    if not os.path.exists(log_path):
+        return {"total": 0, "records": []}
+
+    try:
+        with open(log_path, "r", encoding="utf-8") as fh:
+            lines = [ln.strip() for ln in fh if ln.strip()]
+
+        records = [json.loads(line) for line in lines]
+        records.reverse()           # newest first
+        return {"total": len(records), "records": records[:limit]}
+
+    except Exception as exc:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to read escalation log: {exc}",
         )

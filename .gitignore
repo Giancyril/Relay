@@ -40,3 +40,6 @@ chroma_db/
 .idea/
 .DS_Store
 *.log
+
+# Escalation log (local runtime data, not versioned)
+escalations.jsonl

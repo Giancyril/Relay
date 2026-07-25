@@ -18,6 +18,7 @@ from app.config import settings
 from app.core.chromadb_client import get_collection
 from app.core.embeddings import get_embeddings
 from app.core.gemini_client import generate_answer
+from app.services.escalation_logger import escalation_logger
 
 logger = logging.getLogger(__name__)
 
@@ -138,6 +139,18 @@ def query_rag(question: str, top_k: int | None = None) -> RAGResult:
         distance_too_far,
         llm_uncertain,
     )
+
+    # -- Step 6: Log escalations for human review ---------------------------
+    if should_escalate:
+        confidence_score = max(0.0, round(1.0 - top_distance, 4))
+        escalation_logger.log(
+            question=question,
+            top_distance=top_distance,
+            confidence_score=confidence_score,
+            answer=answer,
+            distance_triggered=distance_too_far,
+            llm_triggered=llm_uncertain,
+        )
 
     return RAGResult(
         answer=answer,
