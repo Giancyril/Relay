@@ -4,8 +4,16 @@ from pydantic import BaseModel, Field
 
 # Chat Schemas
 class ChatRequest(BaseModel):
-    question: str = Field(..., description="Customer support question", example="What is your return policy?")
-    session_id: Optional[str] = Field(None, description="Optional session ID for memory in future versions", example="sess-12345")
+    question: str = Field(
+        ...,
+        description="Customer support question",
+        json_schema_extra={"example": "What is your return policy?"}
+    )
+    session_id: Optional[str] = Field(
+        None,
+        description="Optional session ID for memory in future versions",
+        json_schema_extra={"example": "sess-12345"}
+    )
 
 
 class RetrievedSource(BaseModel):
@@ -24,9 +32,12 @@ class ChatResponse(BaseModel):
 
 # Ingestion Schemas
 class DocumentInput(BaseModel):
-    doc_id: str = Field(..., example="faq_returns_01")
-    title: str = Field(..., example="Return Policy")
-    content: str = Field(..., example="Products can be returned within 30 days of purchase for a full refund.")
+    doc_id: str = Field(..., json_schema_extra={"example": "faq_returns_01"})
+    title: str = Field(..., json_schema_extra={"example": "Return Policy"})
+    content: str = Field(
+        ...,
+        json_schema_extra={"example": "Products can be returned within 30 days of purchase for a full refund."}
+    )
 
 
 class IngestRequest(BaseModel):
