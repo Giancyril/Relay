@@ -7,7 +7,8 @@ from fastapi import APIRouter, HTTPException, status
 from app.api.schemas import (
     ChatRequest, ChatResponse, RetrievedSource,
     IngestRequest, IngestResponse,
-    HealthResponse, AnalyticsSummaryResponse, TopSourceCount
+    HealthResponse, AnalyticsSummaryResponse, TopSourceCount,
+    DocumentSummary, DocumentListResponse
 )
 from app.config import settings
 from app.core.chromadb_client import ChromaDBClient
@@ -125,6 +126,89 @@ async def ingest_endpoint(request: IngestRequest):
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Ingestion failed: {exc}",
         )
+
+
+@router.get("/documents", response_model=DocumentListResponse, tags=["Ingestion"])
+async def list_documents():
+    """
+    Return a summary list of all unique documents currently indexed in ChromaDB.
+    """
+    try:
+        col = ChromaDBClient().get_or_create_collection()
+        total_chunks = col.count()
+        if total_chunks == 0:
+            return DocumentListResponse(total_documents=0, total_chunks=0, documents=[])
+
+        all_data = col.get(include=["metadatas", "documents"])
+        metadatas = all_data.get("metadatas", [])
+        documents = all_data.get("documents", [])
+
+        # Group by doc_id
+        grouped: dict[str, dict] = {}
+        for meta, doc_text in zip(metadatas, documents):
+            if not meta:
+                continue
+            doc_id = meta.get("doc_id") or meta.get("source", "unknown")
+            title = meta.get("title", doc_id)
+
+            if doc_id not in grouped:
+                grouped[doc_id] = {
+                    "doc_id": doc_id,
+                    "title": title,
+                    "chunk_count": 0,
+                    "snippet": doc_text[:150] + "..." if len(doc_text) > 150 else doc_text,
+                }
+            grouped[doc_id]["chunk_count"] += 1
+
+        doc_summaries = [DocumentSummary(**v) for v in grouped.values()]
+        return DocumentListResponse(
+            total_documents=len(doc_summaries),
+            total_chunks=total_chunks,
+            documents=doc_summaries,
+        )
+    except Exception as exc:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to list documents: {exc}",
+        )
+
+
+@router.delete("/documents/{doc_id}", tags=["Ingestion"])
+async def delete_document(doc_id: str):
+    """
+    Delete all vector chunks belonging to the specified doc_id from ChromaDB.
+    """
+    try:
+        col = ChromaDBClient().get_or_create_collection()
+        # Find all chunk IDs matching doc_id metadata
+        matched = col.get(where={"doc_id": doc_id}, include=[])
+        chunk_ids = matched.get("ids", [])
+
+        if not chunk_ids:
+            # Try fallback query with 'source' metadata
+            matched = col.get(where={"source": doc_id}, include=[])
+            chunk_ids = matched.get("ids", [])
+
+        if not chunk_ids:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail=f"Document with doc_id '{doc_id}' not found.",
+            )
+
+        col.delete(ids=chunk_ids)
+        return {
+            "status": "success",
+            "doc_id": doc_id,
+            "deleted_chunks": len(chunk_ids),
+        }
+    except HTTPException:
+        raise
+    except Exception as exc:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to delete document: {exc}",
+        )
+
 
 
 # ---------------------------------------------------------------------------

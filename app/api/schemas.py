@@ -72,3 +72,18 @@ class AnalyticsSummaryResponse(BaseModel):
     llm_triggered_count: int
     avg_confidence_score: float
     top_escalated_sources: List[TopSourceCount] = []
+
+
+# KB Document Management Schemas
+class DocumentSummary(BaseModel):
+    doc_id: str
+    title: str
+    chunk_count: int
+    snippet: str
+
+
+class DocumentListResponse(BaseModel):
+    total_documents: int
+    total_chunks: int
+    documents: List[DocumentSummary]
+
