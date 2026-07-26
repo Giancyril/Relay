@@ -28,3 +28,18 @@ export async function sendMessage(question, sessionId) {
 
   return response.json();
 }
+
+/**
+ * Clear backend conversation history for a session.
+ */
+export async function clearHistory(sessionId) {
+  if (!sessionId) return;
+  try {
+    await fetch(`${BASE_URL}/chat/history/${encodeURIComponent(sessionId)}`, {
+      method: "DELETE",
+    });
+  } catch (err) {
+    console.warn("Failed to clear session history:", err);
+  }
+}
+

@@ -4,6 +4,7 @@
  */
 
 import { useState } from "react";
+import { clearHistory } from "../api/chatApi";
 
 function generateSessionId() {
   return "sess-" + Math.random().toString(36).slice(2, 11) + "-" + Date.now();
@@ -18,10 +19,11 @@ export function useSession() {
     return newId;
   });
 
-  function resetSession() {
+  async function resetSession() {
+    await clearHistory(sessionId);
     const newId = generateSessionId();
     localStorage.setItem("relay_session_id", newId);
-    window.location.reload(); // simplest way to clear chat state
+    window.location.reload(); // clear chat state and update session
   }
 
   return { sessionId, resetSession };

@@ -17,6 +17,7 @@ from app.services.ingestion_service import ingestion_service
 from app.services.rag_service import query_rag
 from app.services.escalation_logger import escalation_logger
 from app.services.feedback_logger import feedback_logger
+from app.services.memory_store import memory_store
 
 logger = logging.getLogger(__name__)
 router = APIRouter()
@@ -59,11 +60,13 @@ async def health_check():
 @router.post("/chat", response_model=ChatResponse, tags=["Chat"])
 async def chat_endpoint(request: ChatRequest):
     """
-    Answer a customer support question using RAG.
+    Answer a customer support question using RAG with session conversation memory.
 
-    - Embeds the question and retrieves the top-k most relevant knowledge-base chunks.
-    - Passes context + question to the Gemini LLM for a grounded answer.
-    - Returns an escalation flag when the agent isn't confident.
+    - Loads recent conversation history for session_id if provided.
+    - Embeds the question and retrieves top-k knowledge-base chunks.
+    - Passes context + conversation history + question to Gemini LLM.
+    - Appends turn to session memory store.
+    - Returns answer and escalation flag.
     """
     if not request.question.strip():
         raise HTTPException(
@@ -71,8 +74,13 @@ async def chat_endpoint(request: ChatRequest):
             detail="Question must not be empty.",
         )
 
+    session_id = request.session_id
+
+    # Retrieve history if session_id present
+    history = memory_store.get_history(session_id) if session_id else []
+
     try:
-        result = query_rag(request.question)
+        result = query_rag(request.question, history=history)
     except Exception as exc:
         logger.exception("RAG pipeline error: %s", exc)
         raise HTTPException(
@@ -80,25 +88,35 @@ async def chat_endpoint(request: ChatRequest):
             detail=f"RAG pipeline error: {exc}",
         )
 
-    # Map top_distance → confidence score (0 = bad, 1 = perfect cosine match)
-    confidence = max(0.0, round(1.0 - result.top_distance, 4))
+    # Append question and answer to session memory
+    if session_id:
+        memory_store.append_turn(session_id, role="user", text=request.question)
+        memory_store.append_turn(session_id, role="assistant", text=result.answer)
 
     sources = [
-        RetrievedSource(
-            doc_id=chunk.source,
-            snippet=chunk.text[:200],  # return first 200 chars as preview
-            distance=round(chunk.distance, 4),
-        )
-        for chunk in result.retrieved_chunks
+        RetrievedSource(doc_id=c.source, snippet=c.text, distance=c.distance)
+        for c in result.retrieved_chunks
     ]
+
+    confidence_score = max(0.0, round(1.0 - result.top_distance, 4))
 
     return ChatResponse(
         answer=result.answer,
         escalated=result.should_escalate,
-        confidence_score=confidence,
+        confidence_score=confidence_score,
         sources=sources,
-        session_id=request.session_id,
+        session_id=session_id,
     )
+
+
+@router.delete("/chat/history/{session_id}", tags=["Chat"])
+async def clear_chat_history(session_id: str):
+    """
+    Clear conversation memory for the given session ID.
+    """
+    memory_store.clear_session(session_id)
+    return {"status": "success", "session_id": session_id, "message": "History cleared."}
+
 
 
 # ---------------------------------------------------------------------------

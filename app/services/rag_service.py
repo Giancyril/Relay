@@ -68,13 +68,18 @@ class RAGResult:
 # ---------------------------------------------------------------------------
 
 
-def query_rag(question: str, top_k: int | None = None) -> RAGResult:
+def query_rag(
+    question: str,
+    top_k: int | None = None,
+    history: list[dict] | None = None,
+) -> RAGResult:
     """
-    Run the full RAG pipeline for a given user question.
+    Run the full RAG pipeline for a given user question with optional conversation history.
 
     Args:
         question: The user's natural-language question.
         top_k: How many chunks to retrieve. Defaults to settings.retrieval_top_k.
+        history: Optional list of previous conversation turns [{"role": "user"|"assistant", "text": "..."}].
 
     Returns:
         A RAGResult with the answer, retrieved chunks, and escalation flag.
@@ -112,14 +117,24 @@ def query_rag(question: str, top_k: int | None = None) -> RAGResult:
 
     top_distance = chunks[0].distance if chunks else 1.0
 
-    # -- Step 3: Build grounded prompt ---------------------------------------
+    # -- Step 3: Build grounded prompt with history --------------------------
     context_block = "\n\n---\n\n".join(
         f"[Source: {c.source}]\n{c.text}" for c in chunks
     )
+
+    history_block = ""
+    if history:
+        history_lines = []
+        for turn in history:
+            role_label = "Customer" if turn.get("role") == "user" else "Assistant"
+            history_lines.append(f"{role_label}: {turn.get('text', '')}")
+        history_block = "Previous Conversation History:\n" + "\n".join(history_lines) + "\n\n"
+
     full_prompt = (
         _SYSTEM_PROMPT.format(context=context_block)
-        + f"\nUser question: {question}"
+        + f"\n\n{history_block}Current User Question: {question}"
     )
+
 
     # -- Step 4: Generate answer via LLM ------------------------------------
     logger.info("Sending prompt to LLM (top_distance=%.4f)", top_distance)
