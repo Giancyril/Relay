@@ -1,90 +1,101 @@
 import { useState } from "react";
 import { useSession } from "./hooks/useSession";
 import { useChat } from "./hooks/useChat";
+import Sidebar from "./components/Sidebar";
 import ChatThread from "./components/ChatThread";
 import InputBar from "./components/InputBar";
 import AdminDashboard from "./components/AdminDashboard";
+import FeedbackDashboard from "./components/FeedbackDashboard";
 
 export default function App() {
-  const [activeTab, setActiveTab] = useState("chat"); // "chat" | "admin"
+  const [activeTab, setActiveTab] = useState("chat"); // "chat" | "analytics" | "kb" | "feedback"
   const { sessionId, resetSession } = useSession();
   const { messages, isLoading, submit } = useChat(sessionId);
 
+  const getSectionTitle = () => {
+    switch (activeTab) {
+      case "chat":
+        return { title: "Customer Support Workspace", subtitle: "Live RAG customer assistant" };
+      case "analytics":
+        return { title: "Telemetry & Analytics", subtitle: "Real-time escalation metrics & model confidence" };
+      case "kb":
+        return { title: "Knowledge Base Manager", subtitle: "ChromaDB vector documents & chunk index" };
+      case "feedback":
+        return { title: "CSAT & Feedback Center", subtitle: "User ratings, helpfulness score, and comments" };
+      default:
+        return { title: "Relay Support AI", subtitle: "" };
+    }
+  };
+
+  const currentInfo = getSectionTitle();
+
   return (
-    <div className="h-screen flex flex-col bg-surface-900 overflow-hidden">
+    <div className="h-screen flex bg-surface-900 overflow-hidden font-sans">
+      
+      {/* ── Sidebar Navigation ────────────────────────────────── */}
+      <Sidebar
+        activeTab={activeTab}
+        onSelectTab={setActiveTab}
+        sessionId={sessionId}
+        onNewChat={resetSession}
+      />
 
-      {/* ── Header Bar ────────────────────────────────────── */}
-      <header className="bg-surface-800 border-b border-surface-700 px-5 py-3 flex items-center justify-between flex-shrink-0 z-10">
-        
-        {/* Left: Brand logo & Title */}
-        <div className="flex items-center gap-3">
-          <div className="w-8 h-8 rounded-xl bg-brand-600 flex items-center justify-center shadow-lg shadow-brand-900/50">
-            <span className="text-white text-sm font-bold">R</span>
-          </div>
+      {/* ── Main View Area ────────────────────────────────────── */}
+      <main className="flex-1 flex flex-col min-w-0 bg-surface-900 relative h-full">
+
+        {/* Top Header Bar */}
+        <header className="h-16 bg-surface-800/80 border-b border-surface-700/60 px-6 flex items-center justify-between flex-shrink-0 backdrop-blur-md z-10">
           <div>
-            <h1 className="text-sm font-semibold text-slate-100">Relay Support AI</h1>
-            <p className="text-xs text-surface-500">AI-Powered Customer Support</p>
+            <h2 className="text-sm font-bold text-slate-100 flex items-center gap-2">
+              <span>{currentInfo.title}</span>
+            </h2>
+            <p className="text-[11px] text-surface-500">{currentInfo.subtitle}</p>
           </div>
-        </div>
 
-        {/* Center: Navigation Tab Switcher */}
-        <div className="flex items-center bg-surface-900 border border-surface-700 p-1 rounded-xl">
-          <button
-            onClick={() => setActiveTab("chat")}
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
-              activeTab === "chat"
-                ? "bg-brand-600 text-white shadow"
-                : "text-surface-400 hover:text-slate-200"
-            }`}
-          >
-            <span>💬</span>
-            <span>Customer Chat</span>
-          </button>
+          <div className="flex items-center gap-3">
+            {/* Session ID Pill */}
+            <div className="hidden sm:flex items-center gap-2 bg-surface-900 border border-surface-700 px-3 py-1 rounded-xl">
+              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+              <span className="text-xs text-surface-400 font-mono">
+                {sessionId.slice(0, 14)}…
+              </span>
+            </div>
 
-          <button
-            onClick={() => setActiveTab("admin")}
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
-              activeTab === "admin"
-                ? "bg-brand-600 text-white shadow"
-                : "text-surface-400 hover:text-slate-200"
-            }`}
-          >
-            <span>📊</span>
-            <span>Admin Dashboard</span>
-          </button>
-        </div>
-
-        {/* Right: Session Info & New Chat Button */}
-        <div className="flex items-center gap-3">
-          {activeTab === "chat" && (
-            <>
-              <div className="hidden sm:flex items-center gap-1.5">
-                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                <span className="text-xs text-surface-500 font-mono">
-                  {sessionId.slice(0, 16)}…
-                </span>
-              </div>
-
+            {/* Quick action: New Chat */}
+            {activeTab === "chat" && (
               <button
                 onClick={resetSession}
-                className="text-xs text-surface-400 hover:text-slate-200 border border-surface-600 hover:border-surface-500 px-3 py-1.5 rounded-lg transition-colors"
+                className="text-xs font-medium text-surface-400 hover:text-slate-200 border border-surface-600 hover:border-surface-500 px-3 py-1.5 rounded-xl transition-colors"
               >
-                New chat
+                Reset session
               </button>
+            )}
+          </div>
+        </header>
+
+        {/* Content Body Router */}
+        <div className="flex-1 flex flex-col overflow-hidden">
+          {activeTab === "chat" && (
+            <>
+              <ChatThread messages={messages} isLoading={isLoading} sessionId={sessionId} />
+              <InputBar onSubmit={submit} isLoading={isLoading} />
             </>
           )}
-        </div>
-      </header>
 
-      {/* ── Content View ──────────────────────────────────── */}
-      {activeTab === "chat" ? (
-        <>
-          <ChatThread messages={messages} isLoading={isLoading} sessionId={sessionId} />
-          <InputBar onSubmit={submit} isLoading={isLoading} />
-        </>
-      ) : (
-        <AdminDashboard />
-      )}
+          {activeTab === "analytics" && (
+            <AdminDashboard initialTab="analytics" />
+          )}
+
+          {activeTab === "kb" && (
+            <AdminDashboard initialTab="kb" />
+          )}
+
+          {activeTab === "feedback" && (
+            <FeedbackDashboard />
+          )}
+        </div>
+
+      </main>
 
     </div>
   );

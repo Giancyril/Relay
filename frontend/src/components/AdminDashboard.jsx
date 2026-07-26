@@ -8,8 +8,12 @@ import DocumentList from "./DocumentList";
 /**
  * AdminDashboard — main container for Admin view (Analytics & KB Management).
  */
-export default function AdminDashboard() {
-  const [adminTab, setAdminTab] = useState("analytics"); // "analytics" | "kb"
+export default function AdminDashboard({ initialTab = "analytics" }) {
+  const [adminTab, setAdminTab] = useState(initialTab); // "analytics" | "kb"
+
+  useEffect(() => {
+    setAdminTab(initialTab);
+  }, [initialTab]);
   const [summary, setSummary] = useState(null);
   const [feedbackData, setFeedbackData] = useState(null);
   const [records, setRecords] = useState([]);
