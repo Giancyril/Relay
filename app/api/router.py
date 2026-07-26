@@ -7,7 +7,7 @@ from fastapi import APIRouter, HTTPException, status
 from app.api.schemas import (
     ChatRequest, ChatResponse, RetrievedSource,
     IngestRequest, IngestResponse,
-    HealthResponse
+    HealthResponse, AnalyticsSummaryResponse, TopSourceCount
 )
 from app.config import settings
 from app.core.chromadb_client import ChromaDBClient
@@ -128,19 +128,22 @@ async def ingest_endpoint(request: IngestRequest):
 
 
 # ---------------------------------------------------------------------------
-# Escalations  (Step 4: inspect logged low-confidence queries)
+# Escalations & Analytics  (Step 4 + Step 7: inspect & analyze escalation log)
 # ---------------------------------------------------------------------------
 
 @router.get("/escalations", tags=["Escalations"])
-async def list_escalations(limit: int = 50):
+async def list_escalations(
+    limit: int = 50,
+    search: str | None = None,
+    trigger_type: str | None = None,
+):
     """
-    Return the most recent escalated queries from the escalation log.
-
-    These are queries the agent couldn't answer confidently — useful for
-    identifying knowledge gaps and improving the knowledge base.
+    Return the most recent escalated queries from the escalation log with optional filtering.
 
     Args:
         limit: Max number of records to return (newest first). Default 50.
+        search: Optional search substring to filter questions.
+        trigger_type: Filter by 'distance' (high vector distance) or 'llm' (LLM uncertainty phrase).
     """
     log_path = escalation_logger._log_path
 
@@ -152,7 +155,19 @@ async def list_escalations(limit: int = 50):
             lines = [ln.strip() for ln in fh if ln.strip()]
 
         records = [json.loads(line) for line in lines]
-        records.reverse()           # newest first
+        records.reverse()  # newest first
+
+        # Apply search filter
+        if search:
+            q_lower = search.lower()
+            records = [r for r in records if q_lower in r.get("question", "").lower()]
+
+        # Apply trigger_type filter
+        if trigger_type == "distance":
+            records = [r for r in records if r.get("distance_triggered")]
+        elif trigger_type == "llm":
+            records = [r for r in records if r.get("llm_triggered")]
+
         return {"total": len(records), "records": records[:limit]}
 
     except Exception as exc:
@@ -160,3 +175,54 @@ async def list_escalations(limit: int = 50):
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Failed to read escalation log: {exc}",
         )
+
+
+@router.get("/analytics/summary", response_model=AnalyticsSummaryResponse, tags=["Escalations"])
+async def analytics_summary():
+    """
+    Return aggregated analytics summary metrics across all logged escalations.
+    """
+    log_path = escalation_logger._log_path
+
+    if not os.path.exists(log_path):
+        return AnalyticsSummaryResponse(
+            total_escalations=0,
+            distance_triggered_count=0,
+            llm_triggered_count=0,
+            avg_confidence_score=0.0,
+            top_escalated_sources=[],
+        )
+
+    try:
+        with open(log_path, "r", encoding="utf-8") as fh:
+            lines = [ln.strip() for ln in fh if ln.strip()]
+
+        records = [json.loads(line) for line in lines]
+        if not records:
+            return AnalyticsSummaryResponse(
+                total_escalations=0,
+                distance_triggered_count=0,
+                llm_triggered_count=0,
+                avg_confidence_score=0.0,
+                top_escalated_sources=[],
+            )
+
+        total = len(records)
+        dist_count = sum(1 for r in records if r.get("distance_triggered"))
+        llm_count = sum(1 for r in records if r.get("llm_triggered"))
+        avg_conf = round(sum(r.get("confidence_score", 0.0) for r in records) / total, 4)
+
+        return AnalyticsSummaryResponse(
+            total_escalations=total,
+            distance_triggered_count=dist_count,
+            llm_triggered_count=llm_count,
+            avg_confidence_score=avg_conf,
+            top_escalated_sources=[],
+        )
+
+    except Exception as exc:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to compute analytics summary: {exc}",
+        )
+

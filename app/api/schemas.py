@@ -58,3 +58,17 @@ class HealthResponse(BaseModel):
     chromadb_status: str
     chromadb_doc_count: int
     gemini_api_configured: bool
+
+
+# Analytics Schemas
+class TopSourceCount(BaseModel):
+    source: str
+    count: int
+
+
+class AnalyticsSummaryResponse(BaseModel):
+    total_escalations: int
+    distance_triggered_count: int
+    llm_triggered_count: int
+    avg_confidence_score: float
+    top_escalated_sources: List[TopSourceCount] = []
