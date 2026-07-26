@@ -1,0 +1,10 @@
+.PHONY: dev test ingest
+
+dev:
+	python -m uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+
+test:
+	python -m pytest tests/ -v
+
+ingest:
+	python -c "import urllib.request, json; req = urllib.request.Request('http://localhost:8000/ingest', data=json.dumps({'documents': [], 'reset_collection': True}).encode('utf-8'), headers={'Content-Type': 'application/json'}); print(urllib.request.urlopen(req).read().decode('utf-8'))"
