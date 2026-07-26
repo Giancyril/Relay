@@ -43,3 +43,5 @@ chroma_db/
 
 # Escalation log (local runtime data, not versioned)
 escalations.jsonl
+feedback.jsonl
+

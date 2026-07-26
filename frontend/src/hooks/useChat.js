@@ -36,6 +36,7 @@ export function useChat(sessionId) {
           escalated: data.escalated,
           confidence_score: data.confidence_score,
           sources: data.sources || [],
+          originalQuestion: trimmed,  // passed to FeedbackButtons
         });
       } catch (err) {
         addMessage({

@@ -8,13 +8,15 @@ from app.api.schemas import (
     ChatRequest, ChatResponse, RetrievedSource,
     IngestRequest, IngestResponse,
     HealthResponse, AnalyticsSummaryResponse, TopSourceCount,
-    DocumentSummary, DocumentListResponse
+    DocumentSummary, DocumentListResponse,
+    FeedbackRequest, FeedbackSummaryResponse
 )
 from app.config import settings
 from app.core.chromadb_client import ChromaDBClient
 from app.services.ingestion_service import ingestion_service
 from app.services.rag_service import query_rag
 from app.services.escalation_logger import escalation_logger
+from app.services.feedback_logger import feedback_logger
 
 logger = logging.getLogger(__name__)
 router = APIRouter()
@@ -309,4 +311,87 @@ async def analytics_summary():
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Failed to compute analytics summary: {exc}",
         )
+
+
+# ---------------------------------------------------------------------------
+# User Feedback  (Step 8: ratings & CSAT reporting)
+# ---------------------------------------------------------------------------
+
+@router.post("/feedback", tags=["Feedback"])
+async def submit_feedback(request: FeedbackRequest):
+    """
+    Submit user feedback (thumbs up / thumbs down + optional comment) for an answer.
+    """
+    if request.rating not in ("up", "down"):
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail="Rating must be 'up' or 'down'.",
+        )
+
+    try:
+        record = feedback_logger.log(
+            rating=request.rating,
+            question=request.question,
+            answer=request.answer,
+            comment=request.comment,
+            session_id=request.session_id,
+        )
+        return {"status": "success", "message": "Feedback submitted successfully.", "record": record}
+    except Exception as exc:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to log feedback: {exc}",
+        )
+
+
+@router.get("/feedback", response_model=FeedbackSummaryResponse, tags=["Feedback"])
+async def get_feedback_summary(limit: int = 50):
+    """
+    Retrieve logged feedback and CSAT metrics summary.
+    """
+    log_path = feedback_logger._log_path
+
+    if not os.path.exists(log_path):
+        return FeedbackSummaryResponse(
+            total_feedback=0,
+            positive_count=0,
+            negative_count=0,
+            csat_score=100.0,
+            records=[],
+        )
+
+    try:
+        with open(log_path, "r", encoding="utf-8") as fh:
+            lines = [ln.strip() for ln in fh if ln.strip()]
+
+        records = [json.loads(line) for line in lines]
+        if not records:
+            return FeedbackSummaryResponse(
+                total_feedback=0,
+                positive_count=0,
+                negative_count=0,
+                csat_score=100.0,
+                records=[],
+            )
+
+        total = len(records)
+        pos = sum(1 for r in records if r.get("rating") == "up")
+        neg = sum(1 for r in records if r.get("rating") == "down")
+        csat = round((pos / total) * 100, 1) if total > 0 else 100.0
+
+        records.reverse()  # newest first
+        return FeedbackSummaryResponse(
+            total_feedback=total,
+            positive_count=pos,
+            negative_count=neg,
+            csat_score=csat,
+            records=records[:limit],
+        )
+
+    except Exception as exc:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to read feedback log: {exc}",
+        )
+
 

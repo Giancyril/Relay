@@ -1,6 +1,7 @@
 import EscalationBadge from "./EscalationBadge";
 import ConfidenceBar from "./ConfidenceBar";
 import SourcesAccordion from "./SourcesAccordion";
+import FeedbackButtons from "./FeedbackButtons";
 
 /**
  * MessageBubble — renders a single message in the chat thread.
@@ -10,8 +11,8 @@ import SourcesAccordion from "./SourcesAccordion";
  *   "agent" → left-aligned, dark surface card, with confidence/escalation/sources
  *   "error" → left-aligned, rose-tinted border, inline error UI
  */
-export default function MessageBubble({ message }) {
-  const { role, text, escalated, confidence_score, sources, timestamp } = message;
+export default function MessageBubble({ message, sessionId }) {
+  const { role, text, escalated, confidence_score, sources, timestamp, originalQuestion } = message;
 
   const time = timestamp
     ? new Date(timestamp).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })
@@ -77,6 +78,13 @@ export default function MessageBubble({ message }) {
 
         {/* Sources accordion */}
         <SourcesAccordion sources={sources} />
+
+        {/* Feedback rating buttons */}
+        <FeedbackButtons
+          question={originalQuestion || text}
+          answer={text}
+          sessionId={sessionId}
+        />
 
         <p className="text-xs text-surface-500 mt-2">{time}</p>
       </div>

@@ -87,3 +87,21 @@ class DocumentListResponse(BaseModel):
     total_chunks: int
     documents: List[DocumentSummary]
 
+
+# Feedback Schemas
+class FeedbackRequest(BaseModel):
+    rating: str = Field(..., description="'up' for thumbs up, 'down' for thumbs down")
+    question: str
+    answer: str
+    comment: Optional[str] = None
+    session_id: Optional[str] = None
+
+
+class FeedbackSummaryResponse(BaseModel):
+    total_feedback: int
+    positive_count: int
+    negative_count: int
+    csat_score: float
+    records: List[dict] = []
+
+

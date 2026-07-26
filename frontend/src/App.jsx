@@ -79,7 +79,7 @@ export default function App() {
       {/* ── Content View ──────────────────────────────────── */}
       {activeTab === "chat" ? (
         <>
-          <ChatThread messages={messages} isLoading={isLoading} />
+          <ChatThread messages={messages} isLoading={isLoading} sessionId={sessionId} />
           <InputBar onSubmit={submit} isLoading={isLoading} />
         </>
       ) : (

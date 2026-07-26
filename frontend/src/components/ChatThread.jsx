@@ -6,7 +6,7 @@ import TypingIndicator from "./TypingIndicator";
  * ChatThread — the scrollable message list.
  * Auto-scrolls to the latest message whenever messages or loading changes.
  */
-export default function ChatThread({ messages, isLoading }) {
+export default function ChatThread({ messages, isLoading, sessionId }) {
   const bottomRef = useRef(null);
 
   useEffect(() => {
@@ -48,7 +48,7 @@ export default function ChatThread({ messages, isLoading }) {
       )}
 
       {messages.map((msg) => (
-        <MessageBubble key={msg.id} message={msg} />
+        <MessageBubble key={msg.id} message={msg} sessionId={sessionId} />
       ))}
 
       {isLoading && <TypingIndicator />}
