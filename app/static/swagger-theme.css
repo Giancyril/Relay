@@ -1,0 +1,46 @@
+/* ============================================================
+   Relay Support AI — Swagger UI Brand Override
+   Minimal CSS: topbar + method badge accent only.
+   Do NOT override layout, schema viewer, or interaction components.
+   ============================================================ */
+
+/* --- Topbar / Header ---------------------------------------- */
+.swagger-ui .topbar {
+  background-color: #0f172a !important;
+  border-bottom: 1px solid #1e293b;
+  padding: 10px 0;
+}
+
+.swagger-ui .topbar-wrapper img {
+  display: none; /* hide default Swagger logo */
+}
+
+.swagger-ui .topbar-wrapper::before {
+  content: "Relay Support AI";
+  color: #e2e8f0;
+  font-size: 1.15rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  padding-left: 20px;
+}
+
+/* --- HTTP Method Badges -------------------------------------- */
+.swagger-ui .opblock.opblock-post .opblock-summary-method {
+  background: #4f46e5 !important;  /* indigo — POST */
+}
+
+.swagger-ui .opblock.opblock-get .opblock-summary-method {
+  background: #0891b2 !important;  /* cyan — GET */
+}
+
+/* --- Info Section ------------------------------------------- */
+.swagger-ui .info .title {
+  color: #0f172a;
+  font-weight: 700;
+}
+
+/* --- Subtle background tint --------------------------------- */
+.swagger-ui {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
