@@ -117,8 +117,8 @@ export default function Sidebar({
                 key={item.id}
                 onClick={() => onSelectTab(item.id)}
                 className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-medium transition-all outline-none focus:outline-none select-none ${isActive
-                  ? "bg-surface-700 text-slate-100 shadow-sm border border-surface-600"
-                  : "text-surface-400 hover:bg-surface-700/50 hover:text-slate-200"
+                  ? "bg-surface-700/60 text-slate-100 font-semibold"
+                  : "text-surface-400 hover:bg-surface-700/30 hover:text-slate-200"
                   }`}
                 title={isCollapsed ? item.label : undefined}
               >
