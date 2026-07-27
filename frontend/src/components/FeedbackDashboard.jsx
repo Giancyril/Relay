@@ -1,6 +1,8 @@
 import { useState, useEffect, useCallback } from "react";
 import { fetchFeedbackSummary } from "../api/feedbackApi";
 import MetricCard from "./MetricCard";
+import CustomSelectPicker from "./CustomSelectPicker";
+import CustomDatePicker from "./CustomDatePicker";
 
 /**
  * FeedbackDashboard — standalone CSAT report & Feedback Log view.
@@ -9,6 +11,14 @@ export default function FeedbackDashboard() {
   const [data, setData] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [selectedDate, setSelectedDate] = useState("");
+  const [ratingFilter, setRatingFilter] = useState("all");
+
+  const ratingOptions = [
+    { label: "All Ratings", value: "all" },
+    { label: "👍 Helpful", value: "up" },
+    { label: "👎 Unhelpful", value: "down" },
+  ];
 
   const loadFeedback = useCallback(async () => {
     setIsLoading(true);
@@ -31,6 +41,13 @@ export default function FeedbackDashboard() {
   const pos = data?.positive_count || 0;
   const neg = data?.negative_count || 0;
   const csat = data?.csat_score !== undefined ? data.csat_score.toFixed(1) : "100.0";
+
+  // Filter records by rating and date
+  const filteredRecords = (data?.records || []).filter((r) => {
+    if (ratingFilter !== "all" && r.rating !== ratingFilter) return false;
+    if (selectedDate && r.timestamp && !r.timestamp.startsWith(selectedDate)) return false;
+    return true;
+  });
 
   return (
     <div className="flex-1 overflow-y-auto chat-scroll p-6 space-y-6 max-w-7xl mx-auto w-full">
@@ -105,8 +122,23 @@ export default function FeedbackDashboard() {
       </div>
 
       {/* Feedback Log Table */}
-      <div className="bg-surface-800 border border-surface-700 rounded-2xl p-5 shadow-lg space-y-3">
-        <h3 className="text-base font-semibold text-slate-200">Recent Ratings & User Comments</h3>
+      <div className="bg-surface-800 border border-surface-700 rounded-2xl p-5 shadow-lg space-y-4">
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
+          <h3 className="text-base font-semibold text-slate-200">Recent Ratings & User Comments</h3>
+          
+          <div className="flex flex-wrap items-center gap-2">
+            <CustomDatePicker
+              value={selectedDate}
+              onChange={setSelectedDate}
+              placeholder="Filter Date"
+            />
+            <CustomSelectPicker
+              value={ratingFilter}
+              onChange={setRatingFilter}
+              options={ratingOptions}
+            />
+          </div>
+        </div>
         <div className="overflow-x-auto rounded-xl border border-surface-700">
           <table className="w-full text-left text-xs text-slate-300">
             <thead className="bg-surface-900 text-surface-400 font-semibold border-b border-surface-700 uppercase tracking-wider">
@@ -125,14 +157,14 @@ export default function FeedbackDashboard() {
                     Loading CSAT feedback records...
                   </td>
                 </tr>
-              ) : !data || data.records.length === 0 ? (
+              ) : filteredRecords.length === 0 ? (
                 <tr>
                   <td colSpan={5} className="px-4 py-8 text-center text-surface-500">
-                    No feedback ratings submitted yet. Rate answers in the Customer Chat tab to populate.
+                    No matching feedback ratings found.
                   </td>
                 </tr>
               ) : (
-                data.records.map((r, idx) => (
+                filteredRecords.map((r, idx) => (
                   <tr key={idx} className="hover:bg-surface-700/50 transition-colors">
                     <td className="px-4 py-3 text-surface-400 font-mono whitespace-nowrap">
                       {r.timestamp ? new Date(r.timestamp).toLocaleString([], { month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" }) : "—"}

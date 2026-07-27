@@ -1,10 +1,24 @@
 import { useState } from "react";
+import CustomSelectPicker from "./CustomSelectPicker";
+import CustomDatePicker from "./CustomDatePicker";
 
 /**
  * EscalationTable — searchable, filterable table for viewing logged escalations.
  */
 export default function EscalationTable({ records, search, setSearch, triggerType, setTriggerType, isLoading }) {
   const [selectedRecord, setSelectedRecord] = useState(null);
+  const [selectedDate, setSelectedDate] = useState("");
+
+  const triggerOptions = [
+    { label: "All Triggers", value: "all" },
+    { label: "High Distance", value: "distance" },
+    { label: "LLM Uncertainty", value: "llm" },
+  ];
+
+  // Filter by date if selectedDate is set
+  const filteredRecords = selectedDate
+    ? records.filter((r) => r.timestamp && r.timestamp.startsWith(selectedDate))
+    : records;
 
   return (
     <div className="bg-surface-800 border border-surface-700 rounded-2xl p-5 shadow-lg space-y-4">
@@ -18,7 +32,7 @@ export default function EscalationTable({ records, search, setSearch, triggerTyp
 
         <div className="flex flex-wrap items-center gap-2">
           {/* Search Input */}
-          <div className="relative flex-1 sm:w-64">
+          <div className="relative flex-1 sm:w-56">
             <input
               type="text"
               value={search}
@@ -36,16 +50,19 @@ export default function EscalationTable({ records, search, setSearch, triggerTyp
             )}
           </div>
 
-          {/* Trigger Filter */}
-          <select
+          {/* Custom Date Picker */}
+          <CustomDatePicker
+            value={selectedDate}
+            onChange={setSelectedDate}
+            placeholder="Filter Date"
+          />
+
+          {/* Custom Select Picker */}
+          <CustomSelectPicker
             value={triggerType}
-            onChange={(e) => setTriggerType(e.target.value)}
-            className="bg-surface-900 border border-surface-600 rounded-xl px-3 py-1.5 text-xs text-slate-200 outline-none focus:border-brand-500 transition-colors cursor-pointer"
-          >
-            <option value="all">All Triggers</option>
-            <option value="distance">High Distance</option>
-            <option value="llm">LLM Uncertainty</option>
-          </select>
+            onChange={setTriggerType}
+            options={triggerOptions}
+          />
         </div>
       </div>
 
@@ -69,14 +86,14 @@ export default function EscalationTable({ records, search, setSearch, triggerTyp
                   Loading escalation records...
                 </td>
               </tr>
-            ) : records.length === 0 ? (
+            ) : filteredRecords.length === 0 ? (
               <tr>
                 <td colSpan={6} className="px-4 py-8 text-center text-surface-500">
                   No matching escalation records found.
                 </td>
               </tr>
             ) : (
-              records.map((r, idx) => {
+              filteredRecords.map((r, idx) => {
                 const dateStr = r.timestamp
                   ? new Date(r.timestamp).toLocaleString([], {
                       month: "short",
