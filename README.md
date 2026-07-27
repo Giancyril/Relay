@@ -1,6 +1,6 @@
 # Relay Support AI Platform
 
-A production-grade, AI-augmented Customer Support Agent and Telemetry Platform powered by **FastAPI**, **Google Gemini 2.5 Flash**, **ChromaDB**, and **React + Vite**. Features grounded Retrieval-Augmented Generation (RAG), multi-turn conversation memory with session tracking, hybrid confidence & escalation scoring, real-time CSAT & user feedback analytics, interactive knowledge base management, a 5-card administrative telemetry dashboard, a collapsible sidebar navigation inspired by modern dashboard aesthetics, custom date/select pickers, and branded developer API documentation.
+A production-grade, AI-augmented Customer Support Agent and Telemetry Platform powered by **FastAPI**, **Google Gemini 2.5 Flash**, **ChromaDB**, and **React + Vite**. Features grounded Retrieval-Augmented Generation (RAG), multi-turn conversation memory with session tracking, hybrid confidence & escalation scoring, real-time CSAT & user feedback analytics, interactive knowledge base management, a 5-card administrative telemetry dashboard, a collapsible sidebar navigation with a custom vector SVG logo, Web Speech audio assistant capabilities (Voice Dictation & Text-to-Speech), AI prompt chips, live RAG guardrails tuning, one-click CSV/JSON audit exports, and branded developer API documentation.
 
 ---
 
@@ -14,8 +14,17 @@ A production-grade, AI-augmented Customer Support Agent and Telemetry Platform p
 - **User Feedback & CSAT Scoring**: Inline 👍 / 👎 rating controls under every agent message with optional comment popovers and live Customer Satisfaction (CSAT %) score calculations.
 
 ### Advanced Features
+- **💡 AI Suggested Prompt Chips**: Interactive recommendation pills (`🔐 2FA`, `💳 Payment methods`, `🌐 Web browsers`, `🔒 Data security`) above the chat input for instant 1-click question submission.
+- **🎙️ Web Speech Audio Assistant**: 
+  - **Voice Dictation**: Microphone input button in `InputBar.jsx` using Web Speech API (`SpeechRecognition`) for hands-free voice question dictation.
+  - **Text-to-Speech Read Aloud (`🔊`)**: Embedded read-aloud button on AI responses using Web Speech Synthesis (`speechSynthesis`) with voice playback controls.
+- **⚙️ Live RAG Guardrails & Persona Settings Panel**: Interactive administrative control panel (`RagSettingsPanel.jsx`) allowing real-time tuning of RAG parameters:
+  - Retrieval `Top-K` Chunks (1 to 5 chunks)
+  - Escalation Distance Threshold (0.10 to 0.90)
+  - AI Assistant Persona & Tone (*Professional*, *Concise*, *Empathetic*, *Technical*)
+- **📊 One-Click Audit Export Suite**: Download filtered escalation log records in standard CSV or JSON format directly from the Admin Dashboard for compliance reporting.
 - **Knowledge Base Document Manager**: Complete CRUD suite to view, upload, search, filter, and delete knowledge base documents from ChromaDB with instant vector re-indexing.
-- **Collapsible Sidebar Navigation**: Sleek, responsive sidebar with smooth collapse/expand transitions (`‹` / `›`), active tab highlights, new chat reset controls, and persistence via `localStorage`.
+- **Collapsible Sidebar Navigation**: Sleek, responsive sidebar with smooth collapse/expand transitions (`‹` / `›`), a custom Relay AI vector SVG logo, active tab highlights, new chat reset controls, and persistence via `localStorage`.
 - **Custom UI Pickers**: Proprietary `CustomDatePicker` and `CustomSelectPicker` controls replacing browser-native inputs for consistent dark-themed UI styling across all filtering tools.
 - **Admin Telemetry & Analytics Dashboard**: High-level administrative control center featuring a 5-column metric card grid (Total Queries, Escalation Rate %, Knowledge Docs, LLM Uncertainty, CSAT %), escalation log review modals, and real-time feedback inspection.
 - **Rebranded Developer Swagger Docs**: Custom product-styled OpenAPI documentation (`http://localhost:8000/docs`) featuring custom CSS dark themes, custom brand logos, and structured endpoint groupings.
@@ -36,6 +45,7 @@ A production-grade, AI-augmented Customer Support Agent and Telemetry Platform p
 - **React 19**: Modern UI library with functional components and custom hooks.
 - **Vite**: Ultra-fast frontend build tool and dev server.
 - **Tailwind CSS**: Utility-first CSS framework customized with a rich dark color palette (`surface-800`, `brand-600`).
+- **Web Speech API**: Browser-native `SpeechRecognition` for voice input and `speechSynthesis` for text-to-speech playback.
 - **Lucide Icons**: Clean, scalable SVG icon set for navigation and telemetry indicators.
 
 ---
@@ -48,8 +58,9 @@ The platform uses a decoupled architecture connecting a React single-page applic
 graph TD
     subgraph Client ["Frontend (React 19 / Vite)"]
         Sidebar["Collapsible Sidebar Navigation"]
-        ChatUI["Customer Chat Interface (ChatThread + MessageBubble)"]
-        AdminUI["Admin Telemetry Dashboard"]
+        ChatUI["Customer Chat UI (InputBar + Speech Assistant + Chips)"]
+        AdminUI["Admin Telemetry Dashboard + Export Suite"]
+        RAGSettings["RAG Guardrails & Persona Settings Panel"]
         KBUI["Knowledge Base Document Manager"]
         Pickers["Custom UI Pickers (DatePicker / SelectPicker)"]
     end
@@ -73,6 +84,7 @@ graph TD
     Sidebar <--> KBUI
     ChatUI <--> Pickers
     AdminUI <--> Pickers
+    AdminUI <--> RAGSettings
 
     ChatUI <--> Router
     AdminUI <--> Router
@@ -113,9 +125,11 @@ graph LR
         App --> AdminPage[AdminDashboard.jsx]
         App --> KBPage[KnowledgeBaseManager.jsx]
         App --> CSATPage[FeedbackDashboard.jsx]
+        AdminPage --> RagConfig[RagSettingsPanel.jsx]
         AdminPage --> CustomPickers[CustomDatePicker / CustomSelectPicker]
         CSATPage --> CustomPickers
         ChatPage --> FeedbackBtn[FeedbackButtons.jsx]
+        ChatPage --> InputBox[InputBar.jsx Speech & Chips]
     end
 ```
 
@@ -151,9 +165,11 @@ AI Customer Support/
 │   │   ├── components/
 │   │   │   ├── Sidebar.jsx         # Collapsible sidebar navigation with custom SVG logo
 │   │   │   ├── ChatThread.jsx      # Conversational UI message list
-│   │   │   ├── MessageBubble.jsx   # Rich message rendering with confidence bars & sources
+│   │   │   ├── MessageBubble.jsx   # Rich message rendering with confidence bars, sources & Text-to-Speech
+│   │   │   ├── InputBar.jsx        # Pinned input bar with Speech Dictation & Prompt Chips
 │   │   │   ├── FeedbackButtons.jsx # Inline 👍 / 👎 feedback buttons & comment popover
 │   │   │   ├── AdminDashboard.jsx  # Telemetry dashboard & escalation viewer
+│   │   │   ├── RagSettingsPanel.jsx# Live RAG parameter tuning & persona config panel
 │   │   │   ├── KnowledgeBaseManager.jsx # Document ingestion & removal manager
 │   │   │   ├── FeedbackDashboard.jsx # CSAT analytics & feedback log viewer
 │   │   │   ├── MetricCard.jsx      # Telemetry metric card component
