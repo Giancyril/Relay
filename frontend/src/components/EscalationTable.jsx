@@ -120,6 +120,7 @@ export default function EscalationTable({ records, search, setSearch, triggerTyp
             <span>📄</span>
             <span>JSON</span>
           </button>
+        </div>
       </div>
 
       {/* --- Table Component --- */}
