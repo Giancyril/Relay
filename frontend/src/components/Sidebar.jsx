@@ -67,19 +67,20 @@ export default function Sidebar({
     >
       {/* ── Brand Header ───────────────────────────────────── */}
       <div>
-        <div className="h-16 px-4 flex items-center justify-between border-b border-surface-700/60">
-          <div className="flex items-center gap-3 overflow-hidden">
+        <div className={`h-16 px-3 flex items-center border-b border-surface-700/60 ${isCollapsed ? "justify-center" : "justify-between"}`}>
+          {/* Logo + title — hidden entirely when collapsed */}
+          <div
+            className={`flex items-center gap-3 overflow-hidden transition-all duration-300 ${
+              isCollapsed ? "max-w-0 opacity-0 pointer-events-none" : "max-w-full opacity-100"
+            }`}
+          >
             <div className="w-8 h-8 rounded-xl bg-brand-600 flex items-center justify-center flex-shrink-0">
               <span className="text-white text-sm font-bold">R</span>
             </div>
-            {!isCollapsed && (
-              <div className="truncate">
-                <div className="flex items-center gap-1.5">
-                  <h1 className="text-sm font-bold text-slate-100 truncate">Relay AI</h1>
-                </div>
-                <p className="text-[11px] text-surface-500 truncate">Customer Support</p>
-              </div>
-            )}
+            <div className="truncate">
+              <h1 className="text-sm font-bold text-slate-100 truncate whitespace-nowrap">Relay AI</h1>
+              <p className="text-[11px] text-surface-500 truncate whitespace-nowrap">Customer Support</p>
+            </div>
           </div>
 
           {/* Collapse toggle button */}
