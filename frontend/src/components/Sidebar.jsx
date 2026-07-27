@@ -62,24 +62,20 @@ export default function Sidebar({
 
   return (
     <aside
-      className={`h-full bg-surface-800 border-r border-surface-700 flex flex-col justify-between transition-all duration-300 z-20 flex-shrink-0 relative ${
-        isCollapsed ? "w-16" : "w-64"
-      }`}
+      className={`h-full bg-surface-800 border-r border-surface-700 flex flex-col justify-between transition-all duration-300 z-20 flex-shrink-0 relative ${isCollapsed ? "w-16" : "w-64"
+        }`}
     >
       {/* ── Brand Header ───────────────────────────────────── */}
       <div>
         <div className="h-16 px-4 flex items-center justify-between border-b border-surface-700/60">
           <div className="flex items-center gap-3 overflow-hidden">
-            <div className="w-8 h-8 rounded-xl bg-brand-600 flex items-center justify-center shadow-lg shadow-brand-900/50 flex-shrink-0">
+            <div className="w-8 h-8 rounded-xl bg-brand-600 flex items-center justify-center flex-shrink-0">
               <span className="text-white text-sm font-bold">R</span>
             </div>
             {!isCollapsed && (
               <div className="truncate">
                 <div className="flex items-center gap-1.5">
                   <h1 className="text-sm font-bold text-slate-100 truncate">Relay AI</h1>
-                  <span className="text-[10px] font-semibold bg-brand-950/80 border border-brand-700/60 text-brand-400 px-1.5 py-0.2 rounded-full">
-                    Pro
-                  </span>
                 </div>
                 <p className="text-[11px] text-surface-500 truncate">Customer Support</p>
               </div>
@@ -89,7 +85,7 @@ export default function Sidebar({
           {/* Collapse toggle button */}
           <button
             onClick={() => setIsCollapsed(!isCollapsed)}
-            className="w-7 h-7 rounded-lg border border-surface-600 bg-surface-700 hover:bg-surface-600 text-surface-400 hover:text-slate-200 flex items-center justify-center transition-colors flex-shrink-0"
+            className="w-7 h-7 rounded-lg border border-surface-600 bg-surface-700 hover:bg-surface-600 text-surface-400 hover:text-slate-200 flex items-center justify-center transition-colors flex-shrink-0 outline-none focus:outline-none select-none"
             title={isCollapsed ? "Expand Sidebar" : "Collapse Sidebar"}
           >
             {isCollapsed ? "›" : "‹"}
@@ -103,9 +99,8 @@ export default function Sidebar({
               onNewChat();
               onSelectTab("chat");
             }}
-            className={`w-full bg-brand-600 hover:bg-brand-500 text-white font-medium rounded-xl transition-all shadow-md shadow-brand-950/40 flex items-center justify-center gap-2 ${
-              isCollapsed ? "h-10 px-0" : "h-10 px-4 text-xs"
-            }`}
+            className={`w-full bg-brand-600 hover:bg-brand-500 text-white font-medium rounded-xl transition-all shadow-md shadow-brand-950/40 flex items-center justify-center gap-2 outline-none focus:outline-none select-none ${isCollapsed ? "h-10 px-0" : "h-10 px-4 text-xs"
+              }`}
             title="Start new conversation"
           >
             <span className="text-base font-bold">+</span>
@@ -121,18 +116,16 @@ export default function Sidebar({
               <button
                 key={item.id}
                 onClick={() => onSelectTab(item.id)}
-                className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-medium transition-all ${
-                  isActive
-                    ? "bg-surface-700 text-slate-100 shadow-sm border border-surface-600"
-                    : "text-surface-400 hover:bg-surface-700/50 hover:text-slate-200"
-                }`}
+                className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-medium transition-all outline-none focus:outline-none select-none ${isActive
+                  ? "bg-surface-700 text-slate-100 shadow-sm border border-surface-600"
+                  : "text-surface-400 hover:bg-surface-700/50 hover:text-slate-200"
+                  }`}
                 title={isCollapsed ? item.label : undefined}
               >
                 <div className="flex items-center gap-3 truncate">
                   <div
-                    className={`${
-                      isActive ? "text-brand-400" : "text-surface-400"
-                    }`}
+                    className={`${isActive ? "text-brand-400" : "text-surface-400"
+                      }`}
                   >
                     {item.icon}
                   </div>
