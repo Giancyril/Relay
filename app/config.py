@@ -11,7 +11,7 @@ class Settings(BaseSettings):
 
     # Gemini Config
     gemini_api_key: str = "mock_key_for_dev"
-    gemini_model_name: str = "gemini-1.5-flash"
+    gemini_model_name: str = "gemini-2.5-flash"
 
     # ChromaDB Config
     chromadb_persist_dir: str = "./chroma_db"
@@ -32,7 +32,8 @@ class Settings(BaseSettings):
     model_config = SettingsConfigDict(
         env_file=".env",
         env_file_encoding="utf-8",
-        extra="ignore"
+        extra="ignore",
+        env_ignore_empty=True,  # blank shell vars won't override .env values
     )
 
 
