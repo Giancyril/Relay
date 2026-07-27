@@ -1,3 +1,4 @@
+import { useState, useEffect } from "react";
 import EscalationBadge from "./EscalationBadge";
 import ConfidenceBar from "./ConfidenceBar";
 import SourcesAccordion from "./SourcesAccordion";
@@ -5,18 +6,43 @@ import FeedbackButtons from "./FeedbackButtons";
 
 /**
  * MessageBubble — renders a single message in the chat thread.
- *
- * Roles:
- *   "user"  → right-aligned, brand indigo background
- *   "agent" → left-aligned, dark surface card, with confidence/escalation/sources
- *   "error" → left-aligned, rose-tinted border, inline error UI
  */
 export default function MessageBubble({ message, sessionId }) {
   const { role, text, escalated, confidence_score, sources, timestamp, originalQuestion } = message;
+  const [isPlaying, setIsPlaying] = useState(false);
 
   const time = timestamp
     ? new Date(timestamp).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })
     : "";
+
+  useEffect(() => {
+    return () => {
+      if (window.speechSynthesis) {
+        window.speechSynthesis.cancel();
+      }
+    };
+  }, []);
+
+  function toggleSpeech() {
+    if (!window.speechSynthesis) {
+      alert("Text-to-Speech is not supported in this browser.");
+      return;
+    }
+
+    if (isPlaying) {
+      window.speechSynthesis.cancel();
+      setIsPlaying(false);
+    } else {
+      window.speechSynthesis.cancel(); // stop any ongoing speech
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.rate = 1.0;
+      utterance.pitch = 1.0;
+      utterance.onend = () => setIsPlaying(false);
+      utterance.onerror = () => setIsPlaying(false);
+      window.speechSynthesis.speak(utterance);
+      setIsPlaying(true);
+    }
+  }
 
   /* ── User message ─────────────────────────────────────────── */
   if (role === "user") {
@@ -79,14 +105,30 @@ export default function MessageBubble({ message, sessionId }) {
         {/* Sources accordion */}
         <SourcesAccordion sources={sources} />
 
-        {/* Feedback rating buttons */}
-        <FeedbackButtons
-          question={originalQuestion || text}
-          answer={text}
-          sessionId={sessionId}
-        />
+        {/* Footer bar with Feedback buttons & Speech Playback */}
+        <div className="flex items-center justify-between mt-3 pt-2 border-t border-surface-600/50">
+          <FeedbackButtons
+            question={originalQuestion || text}
+            answer={text}
+            sessionId={sessionId}
+          />
 
-        <p className="text-xs text-surface-500 mt-2">{time}</p>
+          <div className="flex items-center gap-3">
+            {/* Text-to-Speech Button */}
+            <button
+              onClick={toggleSpeech}
+              className={`flex items-center gap-1 text-xs transition-colors ${
+                isPlaying ? "text-brand-400 font-medium" : "text-surface-400 hover:text-slate-200"
+              }`}
+              title={isPlaying ? "Stop Reading" : "Read Answer Aloud"}
+            >
+              <span>{isPlaying ? "🔊" : "🔈"}</span>
+              <span>{isPlaying ? "Speaking..." : "Read"}</span>
+            </button>
+
+            <span className="text-xs text-surface-500">{time}</span>
+          </div>
+        </div>
       </div>
     </div>
   );

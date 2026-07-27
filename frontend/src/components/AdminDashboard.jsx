@@ -4,6 +4,7 @@ import { fetchFeedbackSummary } from "../api/feedbackApi";
 import MetricCard from "./MetricCard";
 import EscalationTable from "./EscalationTable";
 import DocumentList from "./DocumentList";
+import RagSettingsPanel from "./RagSettingsPanel";
 
 /**
  * AdminDashboard — main container for Admin view (Analytics & KB Management).
@@ -190,6 +191,9 @@ export default function AdminDashboard({ initialTab = "analytics" }) {
             setTriggerType={setTriggerType}
             isLoading={isLoading}
           />
+
+          {/* RAG Tuning & Guardrails Settings Panel */}
+          <RagSettingsPanel />
 
           {/* Feedback Log Table */}
           {feedbackData && feedbackData.records.length > 0 && (

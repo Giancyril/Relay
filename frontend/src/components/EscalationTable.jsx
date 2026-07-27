@@ -20,6 +20,41 @@ export default function EscalationTable({ records, search, setSearch, triggerTyp
     ? records.filter((r) => r.timestamp && r.timestamp.startsWith(selectedDate))
     : records;
 
+  function handleExportCSV() {
+    if (!filteredRecords.length) return;
+    const csvContent =
+      "data:text/csv;charset=utf-8," +
+      [
+        "Timestamp,Question,Confidence,TopDistance,AnswerPreview",
+        ...filteredRecords.map((r) =>
+          [
+            `"${r.timestamp || ""}"`,
+            `"${(r.question || "").replace(/"/g, '""')}"`,
+            r.confidence_score ?? "",
+            r.top_distance ?? "",
+            `"${(r.answer_preview || "").replace(/"/g, '""')}"`,
+          ].join(",")
+        ),
+      ].join("\n");
+    const link = document.createElement("a");
+    link.setAttribute("href", encodeURI(csvContent));
+    link.setAttribute("download", `escalations_export_${Date.now()}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  }
+
+  function handleExportJSON() {
+    if (!filteredRecords.length) return;
+    const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(filteredRecords, null, 2));
+    const link = document.createElement("a");
+    link.setAttribute("href", dataStr);
+    link.setAttribute("download", `escalations_export_${Date.now()}.json`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  }
+
   return (
     <div className="bg-surface-800 border border-surface-700 rounded-2xl p-5 shadow-lg space-y-4">
 
@@ -32,7 +67,7 @@ export default function EscalationTable({ records, search, setSearch, triggerTyp
 
         <div className="flex flex-wrap items-center gap-2">
           {/* Search Input */}
-          <div className="relative flex-1 sm:w-56">
+          <div className="relative flex-1 sm:w-48">
             <input
               type="text"
               value={search}
@@ -59,11 +94,32 @@ export default function EscalationTable({ records, search, setSearch, triggerTyp
 
           {/* Custom Select Picker */}
           <CustomSelectPicker
+            options={triggerOptions}
             value={triggerType}
             onChange={setTriggerType}
-            options={triggerOptions}
           />
-        </div>
+
+          {/* Export CSV Button */}
+          <button
+            onClick={handleExportCSV}
+            disabled={!filteredRecords.length}
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-emerald-500/40 bg-emerald-950/30 hover:bg-emerald-900/50 text-emerald-300 text-xs font-medium transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+            title="Export filtered records to CSV"
+          >
+            <span>📥</span>
+            <span>CSV</span>
+          </button>
+
+          {/* Export JSON Button */}
+          <button
+            onClick={handleExportJSON}
+            disabled={!filteredRecords.length}
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-sky-500/40 bg-sky-950/30 hover:bg-sky-900/50 text-sky-300 text-xs font-medium transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+            title="Export filtered records to JSON"
+          >
+            <span>📄</span>
+            <span>JSON</span>
+          </button>
       </div>
 
       {/* --- Table Component --- */}
