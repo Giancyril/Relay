@@ -74,8 +74,15 @@ export default function Sidebar({
               isCollapsed ? "max-w-0 opacity-0 pointer-events-none" : "max-w-full opacity-100"
             }`}
           >
-            <div className="w-8 h-8 rounded-xl bg-brand-600 flex items-center justify-center flex-shrink-0">
-              <span className="text-white text-sm font-bold">R</span>
+            <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-brand-500 via-indigo-600 to-purple-600 flex items-center justify-center flex-shrink-0 shadow-md shadow-brand-500/20 border border-white/10">
+              <svg className="w-5 h-5 text-white drop-shadow" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M6.5 4.5H13.5C15.7091 4.5 17.5 6.29086 17.5 8.5C17.5 10.7091 15.7091 12.5 13.5 12.5H6.5V4.5Z" fill="white" fillOpacity="0.2"/>
+                <path d="M6.5 4.5H13.5C15.7091 4.5 17.5 6.29086 17.5 8.5C17.5 10.7091 15.7091 12.5 13.5 12.5H6.5V4.5Z" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                <path d="M12 12.5L17 19.5" stroke="white" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"/>
+                <path d="M6.5 4.5V19.5" stroke="white" strokeWidth="2.2" strokeLinecap="round"/>
+                <circle cx="17" cy="19.5" r="1.5" fill="#38BDF8"/>
+                <circle cx="17.5" cy="8.5" r="1.2" fill="#A855F7"/>
+              </svg>
             </div>
             <div className="truncate">
               <h1 className="text-sm font-bold text-slate-100 truncate whitespace-nowrap">Relay AI</h1>

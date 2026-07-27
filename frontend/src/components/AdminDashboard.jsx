@@ -68,24 +68,22 @@ export default function AdminDashboard({ initialTab = "analytics" }) {
         <div className="flex items-center bg-surface-800 border border-surface-700 p-1 rounded-xl">
           <button
             onClick={() => setAdminTab("analytics")}
-            className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
-              adminTab === "analytics"
+            className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${adminTab === "analytics"
                 ? "bg-surface-700 text-brand-400 font-semibold shadow"
                 : "text-surface-400 hover:text-slate-200"
-            }`}
+              }`}
           >
-            📊 Analytics & Telemetry
+            Analytics & Telemetry
           </button>
 
           <button
             onClick={() => setAdminTab("kb")}
-            className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
-              adminTab === "kb"
+            className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${adminTab === "kb"
                 ? "bg-surface-700 text-brand-400 font-semibold shadow"
                 : "text-surface-400 hover:text-slate-200"
-            }`}
+              }`}
           >
-            📚 Knowledge Base Manager
+            Knowledge Base Manager
           </button>
         </div>
       </div>
