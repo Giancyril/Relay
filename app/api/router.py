@@ -106,6 +106,8 @@ async def chat_endpoint(request: ChatRequest):
         confidence_score=confidence_score,
         sources=sources,
         session_id=session_id,
+        sentiment=result.sentiment,
+        urgency=result.urgency,
     )
 
 

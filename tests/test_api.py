@@ -42,7 +42,9 @@ class TestChatEndpoint:
                 answer="Sample answer",
                 retrieved_chunks=[mock_chunk],
                 should_escalate=False,
-                top_distance=0.20
+                top_distance=0.20,
+                sentiment="neutral",
+                urgency="low",
             )
 
             response = client.post("/chat", json={"question": "What is your policy?", "session_id": "sess-1"})

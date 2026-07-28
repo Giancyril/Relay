@@ -106,7 +106,6 @@ export default function EscalationTable({ records, search, setSearch, triggerTyp
             className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-emerald-500/40 bg-emerald-950/30 hover:bg-emerald-900/50 text-emerald-300 text-xs font-medium transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
             title="Export filtered records to CSV"
           >
-            <span>📥</span>
             <span>CSV</span>
           </button>
 
@@ -117,7 +116,7 @@ export default function EscalationTable({ records, search, setSearch, triggerTyp
             className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-sky-500/40 bg-sky-950/30 hover:bg-sky-900/50 text-sky-300 text-xs font-medium transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
             title="Export filtered records to JSON"
           >
-            <span>📄</span>
+
             <span>JSON</span>
           </button>
         </div>
@@ -153,11 +152,11 @@ export default function EscalationTable({ records, search, setSearch, triggerTyp
               filteredRecords.map((r, idx) => {
                 const dateStr = r.timestamp
                   ? new Date(r.timestamp).toLocaleString([], {
-                      month: "short",
-                      day: "numeric",
-                      hour: "2-digit",
-                      minute: "2-digit",
-                    })
+                    month: "short",
+                    day: "numeric",
+                    hour: "2-digit",
+                    minute: "2-digit",
+                  })
                   : "N/A";
 
                 return (

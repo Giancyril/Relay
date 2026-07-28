@@ -53,6 +53,35 @@ class RetrievedChunk:
     distance: float  # cosine distance; lower = more similar
 
 
+_FRUSTRATED_KEYWORDS = {"frustrated", "broken", "terrible", "worst", "hate", "cancel", "useless", "refund", "horrible", "fail", "failed", "angry", "annoyed"}
+_URGENT_KEYWORDS = {"urgent", "immediately", "asap", "emergency", "critical", "blocked", "cannot access", "locked out", "stolen", "hacked", "help me"}
+
+
+def analyze_sentiment_and_urgency(question: str) -> tuple[str, str]:
+    """
+    Analyze question text for customer sentiment and urgency level.
+    Returns:
+        tuple[sentiment, urgency]
+        sentiment: 'frustrated' | 'urgent' | 'inquiring' | 'neutral'
+        urgency: 'high' | 'medium' | 'low'
+    """
+    q_lower = question.lower()
+
+    has_frustration = any(kw in q_lower for kw in _FRUSTRATED_KEYWORDS)
+    has_urgency = any(kw in q_lower for kw in _URGENT_KEYWORDS) or "!" in question
+
+    if has_frustration and has_urgency:
+        return "frustrated", "high"
+    elif has_frustration:
+        return "frustrated", "medium"
+    elif has_urgency:
+        return "urgent", "high"
+    elif "?" in question or any(q in q_lower for q in ["how", "what", "where", "when", "why", "can i"]):
+        return "inquiring", "low"
+    else:
+        return "neutral", "low"
+
+
 @dataclass
 class RAGResult:
     """The full output of a RAG query."""
@@ -61,6 +90,8 @@ class RAGResult:
     retrieved_chunks: list[RetrievedChunk] = field(default_factory=list)
     should_escalate: bool = False
     top_distance: float = 1.0  # worst-case default
+    sentiment: str = "neutral"
+    urgency: str = "low"
 
 
 # ---------------------------------------------------------------------------
@@ -167,9 +198,13 @@ def query_rag(
             llm_triggered=llm_uncertain,
         )
 
+    sentiment, urgency = analyze_sentiment_and_urgency(question)
+
     return RAGResult(
         answer=answer,
         retrieved_chunks=chunks,
         should_escalate=should_escalate,
         top_distance=top_distance,
+        sentiment=sentiment,
+        urgency=urgency,
     )

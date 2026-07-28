@@ -32,7 +32,7 @@ export default function RagSettingsPanel() {
           onClick={handleSave}
           className="px-4 py-2 rounded-xl bg-brand-600 hover:bg-brand-500 text-white text-xs font-semibold shadow-md transition-all active:scale-95 flex items-center gap-1.5"
         >
-          <span>{isSaved ? "✓ Saved" : "💾 Save Settings"}</span>
+          <span>{isSaved ? "✓ Saved" : " Save Settings"}</span>
         </button>
       </div>
 
@@ -92,11 +92,10 @@ export default function RagSettingsPanel() {
               <div
                 key={p.id}
                 onClick={() => setSelectedPersona(p.id)}
-                className={`p-3.5 rounded-xl border cursor-pointer transition-all ${
-                  isSelected
+                className={`p-3.5 rounded-xl border cursor-pointer transition-all ${isSelected
                     ? "bg-brand-950/40 border-brand-500 shadow-md ring-1 ring-brand-500/50"
                     : "bg-surface-900/40 border-surface-700 hover:border-surface-600"
-                }`}
+                  }`}
               >
                 <div className="flex items-center justify-between mb-1">
                   <span className="text-xs font-semibold text-slate-200">{p.name}</span>

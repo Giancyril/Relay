@@ -2,7 +2,7 @@
  * useChat.js — manages message thread, API calls, loading, and error state.
  *
  * Message shape:
- *   { id, role: "user"|"agent"|"error", text, escalated, confidence_score, sources, timestamp }
+ *   { id, role: "user"|"agent"|"error", text, escalated, confidence_score, sources, timestamp, sentiment, urgency }
  */
 
 import { useState, useCallback } from "react";
@@ -36,6 +36,8 @@ export function useChat(sessionId) {
           escalated: data.escalated,
           confidence_score: data.confidence_score,
           sources: data.sources || [],
+          sentiment: data.sentiment || null,
+          urgency: data.urgency || null,
           originalQuestion: trimmed,  // passed to FeedbackButtons
         });
       } catch (err) {

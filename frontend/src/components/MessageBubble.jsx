@@ -8,7 +8,7 @@ import FeedbackButtons from "./FeedbackButtons";
  * MessageBubble — renders a single message in the chat thread.
  */
 export default function MessageBubble({ message, sessionId }) {
-  const { role, text, escalated, confidence_score, sources, timestamp, originalQuestion } = message;
+  const { role, text, escalated, confidence_score, sources, timestamp, originalQuestion, sentiment, urgency } = message;
   const [isPlaying, setIsPlaying] = useState(false);
 
   const time = timestamp
@@ -93,6 +93,47 @@ export default function MessageBubble({ message, sessionId }) {
       >
         {/* Answer text */}
         <p className="text-slate-200 whitespace-pre-wrap">{text}</p>
+
+        {/* Sentiment & Urgency badges */}
+        {(sentiment || urgency) && (
+          <div className="flex flex-wrap items-center gap-1.5 mt-2">
+            {sentiment && (
+              <span
+                className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold border ${
+                  sentiment === "frustrated"
+                    ? "bg-rose-950/50 border-rose-700/50 text-rose-300"
+                    : sentiment === "urgent"
+                    ? "bg-amber-950/50 border-amber-600/50 text-amber-300"
+                    : sentiment === "inquiring"
+                    ? "bg-sky-950/50 border-sky-700/50 text-sky-300"
+                    : "bg-surface-700/60 border-surface-600 text-surface-400"
+                }`}
+              >
+                {sentiment === "frustrated" && "😡"}
+                {sentiment === "urgent" && "🚨"}
+                {sentiment === "inquiring" && "💬"}
+                {sentiment === "neutral" && "😐"}
+                {sentiment.charAt(0).toUpperCase() + sentiment.slice(1)}
+              </span>
+            )}
+            {urgency && (
+              <span
+                className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold border ${
+                  urgency === "high"
+                    ? "bg-rose-950/50 border-rose-700/50 text-rose-300"
+                    : urgency === "medium"
+                    ? "bg-amber-950/50 border-amber-600/50 text-amber-300"
+                    : "bg-emerald-950/50 border-emerald-700/50 text-emerald-400"
+                }`}
+              >
+                {urgency === "high" && "🔴"}
+                {urgency === "medium" && "🟡"}
+                {urgency === "low" && "🟢"}
+                {urgency.charAt(0).toUpperCase() + urgency.slice(1)} Priority
+              </span>
+            )}
+          </div>
+        )}
 
         {/* Confidence bar */}
         {typeof confidence_score === "number" && (

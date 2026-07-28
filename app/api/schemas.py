@@ -28,6 +28,8 @@ class ChatResponse(BaseModel):
     confidence_score: float
     sources: List[RetrievedSource] = []
     session_id: Optional[str] = None
+    sentiment: Optional[str] = Field("neutral", description="Detected user query sentiment (frustrated, urgent, inquiring, neutral)")
+    urgency: Optional[str] = Field("low", description="Detected urgency level (high, medium, low)")
 
 
 # Ingestion Schemas
