@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState, useMemo } from "react";
 import MessageBubble from "./MessageBubble";
 import TypingIndicator from "./TypingIndicator";
+import { useChatExport } from "../hooks/useChatExport";
 
 /**
  * ChatThread — scrollable message list with an optional pinned search bar.
@@ -11,6 +12,7 @@ export default function ChatThread({ messages, isLoading, sessionId, onSelectPro
   const searchRef = useRef(null);
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  const { exportAsTxt, exportAsJson } = useChatExport(messages, sessionId);
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -83,6 +85,26 @@ export default function ChatThread({ messages, isLoading, sessionId, onSelectPro
             <span className="text-[10px] font-semibold text-surface-500 whitespace-nowrap">
               {matchCount > 0 ? `${matchCount} result${matchCount !== 1 ? "s" : ""}` : "No results"}
             </span>
+          )}
+
+          {/* Export buttons */}
+          {messages.length > 0 && (
+            <div className="flex items-center gap-1.5 ml-2 border-l border-surface-700/80 pl-2">
+              <button
+                onClick={exportAsTxt}
+                className="text-[10px] bg-surface-800 hover:bg-surface-700 text-surface-300 px-2 py-0.5 rounded border border-surface-600 font-mono transition-colors"
+                title="Export transcript as plain text"
+              >
+                📥 TXT
+              </button>
+              <button
+                onClick={exportAsJson}
+                className="text-[10px] bg-surface-800 hover:bg-surface-700 text-surface-300 px-2 py-0.5 rounded border border-surface-600 font-mono transition-colors"
+                title="Export transcript as structured JSON"
+              >
+                📥 JSON
+              </button>
+            </div>
           )}
 
           {/* Clear / close */}
