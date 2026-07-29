@@ -3,6 +3,7 @@ import EscalationBadge from "./EscalationBadge";
 import ConfidenceBar from "./ConfidenceBar";
 import SourcesAccordion from "./SourcesAccordion";
 import FeedbackButtons from "./FeedbackButtons";
+import { useToastContext } from "../context/ToastContext";
 
 /**
  * MessageBubble — renders a single message in the chat thread.
@@ -10,6 +11,15 @@ import FeedbackButtons from "./FeedbackButtons";
 export default function MessageBubble({ message, sessionId }) {
   const { role, text, escalated, confidence_score, sources, timestamp, originalQuestion, sentiment, urgency } = message;
   const [isPlaying, setIsPlaying] = useState(false);
+  const [copied, setCopied] = useState(false);
+  const { showToast } = useToastContext();
+
+  const handleCopy = () => {
+    navigator.clipboard.writeText(text);
+    setCopied(true);
+    showToast("Copied answer to clipboard!", "success");
+    setTimeout(() => setCopied(false), 2000);
+  };
 
   const time = timestamp
     ? new Date(timestamp).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })
@@ -155,6 +165,18 @@ export default function MessageBubble({ message, sessionId }) {
           />
 
           <div className="flex items-center gap-3">
+            {/* Copy Button */}
+            <button
+              onClick={handleCopy}
+              className={`flex items-center gap-1 text-xs transition-colors ${
+                copied ? "text-emerald-400 font-medium" : "text-surface-400 hover:text-slate-200"
+              }`}
+              title="Copy answer text"
+            >
+              <span>{copied ? "✓" : "📋"}</span>
+              <span>{copied ? "Copied" : "Copy"}</span>
+            </button>
+
             {/* Text-to-Speech Button */}
             <button
               onClick={toggleSpeech}
