@@ -8,11 +8,30 @@ import { useToastContext } from "../context/ToastContext";
 /**
  * MessageBubble — renders a single message in the chat thread.
  */
-export default function MessageBubble({ message, sessionId }) {
+export default function MessageBubble({ message, sessionId, onSelectPrompt }) {
   const { role, text, escalated, confidence_score, sources, timestamp, originalQuestion, sentiment, urgency, responseTimeMs } = message;
   const [isPlaying, setIsPlaying] = useState(false);
   const [copied, setCopied] = useState(false);
   const { showToast } = useToastContext();
+
+  // Helper to derive smart follow-up suggestions based on response content
+  const followUps = (() => {
+    if (role !== "agent" || !text) return [];
+    const lower = text.toLowerCase();
+    if (lower.includes("return") || lower.includes("refund")) {
+      return ["How long does a refund take?", "What if item is damaged?"];
+    }
+    if (lower.includes("payment") || lower.includes("card") || lower.includes("invoice")) {
+      return ["Do you accept PayPal?", "Where can I download invoices?"];
+    }
+    if (lower.includes("password") || lower.includes("security") || lower.includes("login")) {
+      return ["How to enable 2FA?", "What if I lost my email?"];
+    }
+    if (lower.includes("shipping") || lower.includes("delivery") || lower.includes("tracking")) {
+      return ["Do you ship internationally?", "How to track my order?"];
+    }
+    return ["Can I speak to a human representative?", "What are your support hours?"];
+  })();
 
   const handleCopy = () => {
     navigator.clipboard.writeText(text);
@@ -155,6 +174,25 @@ export default function MessageBubble({ message, sessionId }) {
 
         {/* Sources accordion */}
         <SourcesAccordion sources={sources} />
+
+        {/* Smart Follow-Up Suggestions */}
+        {followUps.length > 0 && typeof onSelectPrompt === "function" && (
+          <div className="mt-3 flex flex-wrap gap-1.5 pt-2 border-t border-surface-600/30">
+            <span className="w-full text-[10px] text-surface-400 font-semibold uppercase tracking-wider mb-0.5">
+              Suggested Follow-ups
+            </span>
+            {followUps.map((prompt) => (
+              <button
+                key={prompt}
+                onClick={() => onSelectPrompt(prompt)}
+                className="text-[11px] bg-surface-800 hover:bg-surface-600 border border-surface-600/80 hover:border-brand-500/60 text-brand-300 px-2.5 py-1 rounded-lg transition-all text-left flex items-center gap-1 group"
+              >
+                <span>💡 {prompt}</span>
+                <span className="text-surface-500 group-hover:text-brand-400">→</span>
+              </button>
+            ))}
+          </div>
+        )}
 
         {/* Footer bar with Feedback buttons & Speech Playback */}
         <div className="flex items-center justify-between mt-3 pt-2 border-t border-surface-600/50">

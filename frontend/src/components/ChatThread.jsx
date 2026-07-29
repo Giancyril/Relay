@@ -6,7 +6,7 @@ import TypingIndicator from "./TypingIndicator";
  * ChatThread — scrollable message list with an optional pinned search bar.
  * Auto-scrolls to the latest message whenever messages or loading changes.
  */
-export default function ChatThread({ messages, isLoading, sessionId }) {
+export default function ChatThread({ messages, isLoading, sessionId, onSelectPrompt }) {
   const bottomRef = useRef(null);
   const searchRef = useRef(null);
   const [searchOpen, setSearchOpen] = useState(false);
@@ -119,12 +119,13 @@ export default function ChatThread({ messages, isLoading, sessionId }) {
                 "How do I reset my password?",
                 "What payment methods do you accept?",
               ].map((q) => (
-                <span
+                <button
                   key={q}
-                  className="px-3 py-1.5 text-xs rounded-full bg-surface-700 border border-surface-600 text-surface-400"
+                  onClick={() => onSelectPrompt && onSelectPrompt(q)}
+                  className="px-3 py-1.5 text-xs rounded-full bg-surface-700 hover:bg-surface-600 border border-surface-600 text-surface-300 hover:text-brand-300 transition-colors cursor-pointer"
                 >
                   {q}
-                </span>
+                </button>
               ))}
             </div>
           </div>
@@ -141,7 +142,7 @@ export default function ChatThread({ messages, isLoading, sessionId }) {
                 : ""
             }`}
           >
-            <MessageBubble message={msg} sessionId={sessionId} />
+            <MessageBubble message={msg} sessionId={sessionId} onSelectPrompt={onSelectPrompt} />
           </div>
         ))}
 

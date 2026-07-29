@@ -81,7 +81,7 @@ export default function App() {
         <div className="flex-1 flex flex-col overflow-hidden">
           {activeTab === "chat" && (
             <>
-              <ChatThread messages={messages} isLoading={isLoading} sessionId={sessionId} />
+              <ChatThread messages={messages} isLoading={isLoading} sessionId={sessionId} onSelectPrompt={submit} />
               <InputBar onSubmit={submit} isLoading={isLoading} />
             </>
           )}
