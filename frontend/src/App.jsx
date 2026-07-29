@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useSession } from "./hooks/useSession";
 import { useChat } from "./hooks/useChat";
 import Sidebar from "./components/Sidebar";
@@ -7,11 +7,25 @@ import InputBar from "./components/InputBar";
 import AdminDashboard from "./components/AdminDashboard";
 import FeedbackDashboard from "./components/FeedbackDashboard";
 import SessionStats from "./components/SessionStats";
+import KeyboardShortcutsModal from "./components/KeyboardShortcutsModal";
 
 export default function App() {
   const [activeTab, setActiveTab] = useState("chat"); // "chat" | "analytics" | "kb" | "feedback"
+  const [isShortcutsOpen, setIsShortcutsOpen] = useState(false);
   const { sessionId, resetSession } = useSession();
   const { messages, isLoading, submit } = useChat(sessionId);
+
+  useEffect(() => {
+    function handleKeyDown(e) {
+      // Trigger hotkeys dialog when pressing '?' outside text inputs
+      if (e.key === "?" && !["INPUT", "TEXTAREA"].includes(document.activeElement?.tagName)) {
+        e.preventDefault();
+        setIsShortcutsOpen((v) => !v);
+      }
+    }
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, []);
 
   const getSectionTitle = () => {
     switch (activeTab) {
@@ -65,6 +79,15 @@ export default function App() {
               </span>
             </div>
 
+            {/* Keyboard Shortcuts Trigger Button */}
+            <button
+              onClick={() => setIsShortcutsOpen(true)}
+              className="p-1.5 rounded-xl bg-surface-900 border border-surface-700 hover:border-surface-600 text-surface-400 hover:text-brand-300 text-xs transition-colors"
+              title="Keyboard Shortcuts Cheat Sheet (?)"
+            >
+              ⌨️
+            </button>
+
             {/* Quick action: New Chat */}
             {activeTab === "chat" && (
               <button
@@ -98,6 +121,12 @@ export default function App() {
             <FeedbackDashboard />
           )}
         </div>
+
+        {/* Keyboard Shortcuts Cheat Sheet Modal */}
+        <KeyboardShortcutsModal
+          isOpen={isShortcutsOpen}
+          onClose={() => setIsShortcutsOpen(false)}
+        />
 
       </main>
 
