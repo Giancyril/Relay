@@ -129,6 +129,7 @@ export default function EscalationTable({ records, search, setSearch, triggerTyp
             <tr>
               <th className="px-4 py-3">Timestamp</th>
               <th className="px-4 py-3">User Question</th>
+              <th className="px-4 py-3">Severity</th>
               <th className="px-4 py-3">Trigger Reason</th>
               <th className="px-4 py-3 text-right">Confidence</th>
               <th className="px-4 py-3 text-right">Distance</th>
@@ -138,13 +139,13 @@ export default function EscalationTable({ records, search, setSearch, triggerTyp
           <tbody className="divide-y divide-surface-700">
             {isLoading ? (
               <tr>
-                <td colSpan={6} className="px-4 py-8 text-center text-surface-500">
+                <td colSpan={7} className="px-4 py-8 text-center text-surface-500">
                   Loading escalation records...
                 </td>
               </tr>
             ) : filteredRecords.length === 0 ? (
               <tr>
-                <td colSpan={6} className="px-4 py-8 text-center text-surface-500">
+                <td colSpan={7} className="px-4 py-8 text-center text-surface-500">
                   No matching escalation records found.
                 </td>
               </tr>
@@ -159,6 +160,9 @@ export default function EscalationTable({ records, search, setSearch, triggerTyp
                   })
                   : "N/A";
 
+                const isHighSeverity = r.top_distance > 0.70 || r.confidence_score < 0.30;
+                const isMediumSeverity = !isHighSeverity && (r.top_distance > 0.50 || r.confidence_score < 0.60);
+
                 return (
                   <tr
                     key={idx}
@@ -170,6 +174,17 @@ export default function EscalationTable({ records, search, setSearch, triggerTyp
                     </td>
                     <td className="px-4 py-3 max-w-xs truncate font-medium text-slate-200">
                       {r.question}
+                    </td>
+                    <td className="px-4 py-3 whitespace-nowrap">
+                      <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold border ${
+                        isHighSeverity
+                          ? "bg-rose-950/60 border-rose-700/60 text-rose-300"
+                          : isMediumSeverity
+                          ? "bg-amber-950/60 border-amber-600/60 text-amber-300"
+                          : "bg-emerald-950/60 border-emerald-700/60 text-emerald-300"
+                      }`}>
+                        {isHighSeverity ? "🔴 Critical" : isMediumSeverity ? "🟡 Warning" : "🟢 Info"}
+                      </span>
                     </td>
                     <td className="px-4 py-3 whitespace-nowrap">
                       {r.distance_triggered && (
