@@ -6,6 +6,7 @@ import ChatThread from "./components/ChatThread";
 import InputBar from "./components/InputBar";
 import AdminDashboard from "./components/AdminDashboard";
 import FeedbackDashboard from "./components/FeedbackDashboard";
+import SessionStats from "./components/SessionStats";
 
 export default function App() {
   const [activeTab, setActiveTab] = useState("chat"); // "chat" | "analytics" | "kb" | "feedback"
@@ -53,6 +54,9 @@ export default function App() {
           </div>
 
           <div className="flex items-center gap-3">
+            {/* Live Session Telemetry Stats */}
+            {activeTab === "chat" && <SessionStats messages={messages} />}
+
             {/* Session ID Pill */}
             <div className="hidden sm:flex items-center gap-2 bg-surface-900 border border-surface-700 px-3 py-1 rounded-xl">
               <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
