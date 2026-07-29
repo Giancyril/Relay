@@ -11,6 +11,7 @@ export default function DocumentList() {
   const [error, setError] = useState(null);
   const [isUploaderOpen, setIsUploaderOpen] = useState(false);
   const [deletingId, setDeletingId] = useState(null);
+  const [previewDoc, setPreviewDoc] = useState(null);
 
   const loadDocs = useCallback(async () => {
     setIsLoading(true);
@@ -132,7 +133,13 @@ export default function DocumentList() {
                   <td className="px-4 py-3 max-w-sm truncate text-surface-400">
                     {doc.snippet}
                   </td>
-                  <td className="px-4 py-3 text-center whitespace-nowrap">
+                  <td className="px-4 py-3 text-center whitespace-nowrap space-x-2">
+                    <button
+                      onClick={() => setPreviewDoc(doc)}
+                      className="text-brand-400 hover:text-brand-300 text-xs font-medium underline"
+                    >
+                      Preview
+                    </button>
                     <button
                       onClick={() => handleDelete(doc.doc_id)}
                       disabled={deletingId === doc.doc_id}
@@ -147,6 +154,48 @@ export default function DocumentList() {
           </tbody>
         </table>
       </div>
+
+      {/* Inline Document Content Preview Modal */}
+      {previewDoc && (
+        <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+          <div className="bg-surface-800 border border-surface-600 rounded-2xl max-w-xl w-full p-6 shadow-2xl space-y-4">
+            <div className="flex items-center justify-between border-b border-surface-700 pb-3">
+              <div>
+                <h3 className="text-sm font-semibold text-slate-100">{previewDoc.title}</h3>
+                <p className="text-[11px] font-mono text-brand-400 mt-0.5">{previewDoc.doc_id}</p>
+              </div>
+              <button
+                onClick={() => setPreviewDoc(null)}
+                className="text-surface-400 hover:text-slate-200 text-sm"
+              >
+                ✕
+              </button>
+            </div>
+
+            <div className="flex items-center gap-3 bg-surface-900/60 p-2.5 rounded-xl text-xs text-surface-400">
+              <span>Vector Chunks: <strong className="text-slate-200 font-mono">{previewDoc.chunk_count}</strong></span>
+              <span>•</span>
+              <span>Source: <strong className="text-slate-200">ChromaDB Vector Collection</strong></span>
+            </div>
+
+            <div className="space-y-1">
+              <label className="text-[11px] text-surface-400 font-semibold uppercase tracking-wider">Indexed Content Snippet</label>
+              <div className="bg-surface-900 border border-surface-700 rounded-xl p-3.5 text-xs text-slate-300 font-mono leading-relaxed max-h-60 overflow-y-auto whitespace-pre-wrap select-all">
+                {previewDoc.snippet}
+              </div>
+            </div>
+
+            <div className="flex justify-end pt-2">
+              <button
+                onClick={() => setPreviewDoc(null)}
+                className="bg-surface-700 hover:bg-surface-600 text-slate-200 px-4 py-1.5 rounded-xl text-xs font-medium transition-colors"
+              >
+                Close Preview
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       <DocumentUploader
         isOpen={isUploaderOpen}
