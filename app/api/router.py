@@ -9,7 +9,7 @@ from app.api.schemas import (
     IngestRequest, IngestResponse,
     HealthResponse, AnalyticsSummaryResponse, TopSourceCount,
     DocumentSummary, DocumentListResponse,
-    FeedbackRequest, FeedbackSummaryResponse
+    FeedbackRequest, FeedbackSummaryResponse, SessionStatsResponse
 )
 from app.config import settings
 from app.core.chromadb_client import ChromaDBClient
@@ -118,6 +118,19 @@ async def clear_chat_history(session_id: str):
     """
     memory_store.clear_session(session_id)
     return {"status": "success", "session_id": session_id, "message": "History cleared."}
+
+
+@router.get("/chat/session/{session_id}", response_model=SessionStatsResponse, tags=["Chat"])
+async def get_session_stats(session_id: str):
+    """
+    Retrieve conversation history turns and turn count for a given session ID.
+    """
+    history = memory_store.get_history(session_id)
+    return SessionStatsResponse(
+        session_id=session_id,
+        turn_count=len(history),
+        active_turns=history
+    )
 
 
 

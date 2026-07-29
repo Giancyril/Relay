@@ -32,6 +32,12 @@ class ChatResponse(BaseModel):
     urgency: Optional[str] = Field("low", description="Detected urgency level (high, medium, low)")
 
 
+class SessionStatsResponse(BaseModel):
+    session_id: str
+    turn_count: int
+    active_turns: List[dict] = []
+
+
 # Ingestion Schemas
 class DocumentInput(BaseModel):
     doc_id: str = Field(..., json_schema_extra={"example": "faq_returns_01"})

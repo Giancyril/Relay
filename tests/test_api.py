@@ -57,6 +57,14 @@ class TestChatEndpoint:
             assert data["sources"][0]["doc_id"] == "faq_01"
             assert data["session_id"] == "sess-1"
 
+    def test_get_session_stats_returns_history(self, client: TestClient):
+        response = client.get("/chat/session/sess-1")
+        assert response.status_code == 200
+        data = response.json()
+        assert data["session_id"] == "sess-1"
+        assert "turn_count" in data
+        assert isinstance(data["active_turns"], list)
+
 
 class TestIngestEndpoint:
 
