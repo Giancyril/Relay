@@ -28,8 +28,10 @@ export function useChat(sessionId) {
       addMessage({ role: "user", text: trimmed });
       setIsLoading(true);
 
+      const startTime = performance.now();
       try {
         const data = await sendMessage(trimmed, sessionId);
+        const elapsedMs = Math.round(performance.now() - startTime);
         addMessage({
           role: "agent",
           text: data.answer,
@@ -38,6 +40,7 @@ export function useChat(sessionId) {
           sources: data.sources || [],
           sentiment: data.sentiment || null,
           urgency: data.urgency || null,
+          responseTimeMs: elapsedMs,
           originalQuestion: trimmed,  // passed to FeedbackButtons
         });
       } catch (err) {

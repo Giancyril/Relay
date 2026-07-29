@@ -9,7 +9,7 @@ import { useToastContext } from "../context/ToastContext";
  * MessageBubble — renders a single message in the chat thread.
  */
 export default function MessageBubble({ message, sessionId }) {
-  const { role, text, escalated, confidence_score, sources, timestamp, originalQuestion, sentiment, urgency } = message;
+  const { role, text, escalated, confidence_score, sources, timestamp, originalQuestion, sentiment, urgency, responseTimeMs } = message;
   const [isPlaying, setIsPlaying] = useState(false);
   const [copied, setCopied] = useState(false);
   const { showToast } = useToastContext();
@@ -188,6 +188,12 @@ export default function MessageBubble({ message, sessionId }) {
               <span>{isPlaying ? "🔊" : "🔈"}</span>
               <span>{isPlaying ? "Speaking..." : "Read"}</span>
             </button>
+
+            {typeof responseTimeMs === "number" && (
+              <span className="text-[11px] font-mono text-surface-400 bg-surface-800/80 px-1.5 py-0.5 rounded border border-surface-600/40" title="End-to-end response generation latency">
+                ⚡ {responseTimeMs}ms
+              </span>
+            )}
 
             <span className="text-xs text-surface-500">{time}</span>
           </div>
