@@ -8,15 +8,31 @@ import { useChatExport } from "../hooks/useChatExport";
  * Auto-scrolls to the latest message whenever messages or loading changes.
  */
 export default function ChatThread({ messages, isLoading, sessionId, onSelectPrompt }) {
+  const containerRef = useRef(null);
   const bottomRef = useRef(null);
   const searchRef = useRef(null);
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  const [isAtBottom, setIsAtBottom] = useState(true);
   const { exportAsTxt, exportAsJson } = useChatExport(messages, sessionId);
 
-  useEffect(() => {
+  const scrollToBottom = () => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages, isLoading]);
+    setIsAtBottom(true);
+  };
+
+  const handleScroll = () => {
+    if (!containerRef.current) return;
+    const { scrollTop, scrollHeight, clientHeight } = containerRef.current;
+    const isBottom = scrollHeight - scrollTop - clientHeight < 60;
+    setIsAtBottom(isBottom);
+  };
+
+  useEffect(() => {
+    if (isAtBottom) {
+      bottomRef.current?.scrollIntoView({ behavior: "smooth" });
+    }
+  }, [messages, isLoading, isAtBottom]);
 
   // Focus search input whenever the bar opens
   useEffect(() => {
@@ -121,7 +137,7 @@ export default function ChatThread({ messages, isLoading, sessionId, onSelectPro
       </div>
 
       {/* ── Message List ────────────────────────────────────────── */}
-      <div className="flex-1 overflow-y-auto chat-scroll py-4 space-y-1 relative">
+      <div ref={containerRef} onScroll={handleScroll} className="flex-1 overflow-y-auto chat-scroll py-4 space-y-1 relative">
         {isEmpty && (
           <div className="flex flex-col items-center justify-center h-full text-center px-8 gap-4">
             <div className="w-16 h-16 rounded-2xl bg-surface-700 border border-surface-600 flex items-center justify-center">
@@ -173,12 +189,23 @@ export default function ChatThread({ messages, isLoading, sessionId, onSelectPro
         <div ref={bottomRef} />
       </div>
 
+      {/* ── Scroll to Bottom Floating Pill ──────────────────────── */}
+      {!isAtBottom && messages.length > 0 && (
+        <button
+          onClick={scrollToBottom}
+          className="absolute bottom-5 left-1/2 -translate-x-1/2 z-10 bg-brand-600/90 hover:bg-brand-500 text-white text-xs font-medium px-3.5 py-1.5 rounded-full border border-brand-400/40 shadow-xl backdrop-blur-md transition-all flex items-center gap-1.5 animate-bounce"
+        >
+          <span>⬇</span>
+          <span>Scroll to latest</span>
+        </button>
+      )}
+
       {/* ── Search Toggle Button (bottom-right corner hint) ─────── */}
       {!searchOpen && messages.length > 0 && (
         <button
           onClick={() => setSearchOpen(true)}
           title="Search messages (Ctrl+F)"
-          className="absolute bottom-20 right-5 z-10 w-8 h-8 rounded-full bg-surface-700 border border-surface-600 flex items-center justify-center text-surface-400 hover:text-brand-400 hover:border-brand-500/60 transition-all shadow-lg"
+          className="absolute bottom-5 right-5 z-10 w-8 h-8 rounded-full bg-surface-700 border border-surface-600 flex items-center justify-center text-surface-400 hover:text-brand-400 hover:border-brand-500/60 transition-all shadow-lg"
         >
           <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
