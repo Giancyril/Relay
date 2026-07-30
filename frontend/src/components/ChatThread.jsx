@@ -15,6 +15,7 @@ export default function ChatThread({ messages, isLoading, sessionId, onSelectPro
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [isAtBottom, setIsAtBottom] = useState(true);
+  const [scrollProgress, setScrollProgress] = useState(100);
   const { exportAsTxt, exportAsJson } = useChatExport(messages, sessionId);
   const { pinnedIds, togglePin } = usePinnedMessages();
 
@@ -26,7 +27,10 @@ export default function ChatThread({ messages, isLoading, sessionId, onSelectPro
   const handleScroll = () => {
     if (!containerRef.current) return;
     const { scrollTop, scrollHeight, clientHeight } = containerRef.current;
-    const isBottom = scrollHeight - scrollTop - clientHeight < 60;
+    const maxScroll = scrollHeight - clientHeight;
+    const progress = maxScroll > 0 ? Math.min(100, Math.max(0, (scrollTop / maxScroll) * 100)) : 100;
+    setScrollProgress(progress);
+    const isBottom = maxScroll - scrollTop < 60;
     setIsAtBottom(isBottom);
   };
 
@@ -76,6 +80,14 @@ export default function ChatThread({ messages, isLoading, sessionId, onSelectPro
 
   return (
     <div className="flex-1 flex flex-col min-h-0 relative overflow-hidden">
+
+      {/* ── Scroll Reading Progress Bar ─────────────────────────── */}
+      <div className="w-full h-0.5 bg-surface-800 flex-shrink-0">
+        <div
+          className="h-full bg-brand-500 transition-all duration-150 ease-out"
+          style={{ width: `${scrollProgress}%` }}
+        />
+      </div>
 
       {/* ── Pinned Search Bar ───────────────────────────────────── */}
       <div
