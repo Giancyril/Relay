@@ -1,6 +1,6 @@
 # Relay Support AI Platform
 
-A production-grade, AI-augmented Customer Support Agent and Telemetry Platform powered by **FastAPI**, **Google Gemini 2.5 Flash**, **ChromaDB**, and **React + Vite**. Features grounded Retrieval-Augmented Generation (RAG), multi-turn conversation memory with session tracking, hybrid confidence & escalation scoring, **AI Sentiment & Urgency Classification**, real-time CSAT & user feedback analytics, **drag-and-drop Knowledge Base document ingestion**, **live chat message search with keyword highlighting**, **Global Toast Notification system**, **1-Click Copy & Chat Transcript Export (TXT/JSON)**, **Live Session Telemetry Stats bar**, **Contextual Follow-up Chips**, **Keyboard Shortcuts Cheat Sheet (`?`)**, **Auto-scroll lock detection**, **Inline Document Preview modal**, a 5-card administrative telemetry dashboard, a collapsible sidebar navigation with a custom vector SVG logo, Web Speech audio assistant capabilities (Voice Dictation & Text-to-Speech), AI prompt chips, live RAG guardrails tuning, one-click CSV/JSON audit exports, and branded developer API documentation.
+A production-grade, AI-augmented Customer Support Agent and Telemetry Platform powered by **FastAPI**, **Google Gemini 2.5 Flash**, **ChromaDB**, and **React + Vite**. Features grounded Retrieval-Augmented Generation (RAG), multi-turn conversation memory with session tracking, hybrid confidence & escalation scoring, **AI Sentiment & Urgency Classification**, real-time CSAT & user feedback analytics, **drag-and-drop Knowledge Base document ingestion**, **live chat message search with keyword highlighting**, **Global Toast Notification system**, **1-Click Copy & Chat Transcript Export (TXT/JSON)**, **Live Session Telemetry Stats bar**, **Contextual Follow-up Chips**, **Keyboard Shortcuts Cheat Sheet (`?`)**, **Auto-scroll lock detection**, **Inline Document Preview modal**, a 5-card administrative telemetry dashboard, a collapsible sidebar navigation with a custom vector SVG logo, Web Speech audio assistant capabilities (Voice Dictation & Text-to-Speech), **Web Audio API Synthesized Sound Effects Engine** with mute toggle, **Emoji Message Reactions**, **Pinned Messages system**, **animated SVG Confidence Ring**, **Relative Timestamp toggle**, **Scroll Reading Progress Bar**, **Live System Metrics Panel** with animated counters, and a **What's New release notes modal**.
 
 ---
 
@@ -13,23 +13,34 @@ A production-grade, AI-augmented Customer Support Agent and Telemetry Platform p
 - **Automated Escalation Logging**: Persists low-confidence and escalated queries into a structured JSONL audit log with query metadata, distance scores, and answer previews.
 - **User Feedback & CSAT Scoring**: Inline 👍 / 👎 rating controls under every agent message with optional comment popovers and live Customer Satisfaction (CSAT %) score calculations.
 
-### Advanced Features & 10+ Recent Suite Upgrades
+### Advanced Features — v2.5.0 Feature Suite (12 New Commits)
+- **🎵 Web Audio API Sound Effects Engine**: Synthesized audio feedback (`useSoundEffects` + `SoundEffectsContext`) for send, receive, error, and click events. Zero external dependencies, uses `AudioContext` oscillators. Mute toggle (🔔/🔕) persisted in `localStorage`.
+- **😊 Emoji Message Reactions**: Interactive emoji picker (👍 ❤️ 🔥 😄 🤔) on every AI agent response bubble, with toggle-on/off count badges and audio click feedback.
+- **📌 Pinned Messages System**: Pin key agent answers with `usePinnedMessages` hook. Pinned messages display an amber glow ring ring and remain visually differentiated in the thread.
+- **🎯 Animated SVG Confidence Ring**: New `ConfidenceRing.jsx` component renders an animated circular progress arc beside the confidence bar with color-coded zones (🟢 ≥80%, 🟡 ≥50%, 🔴 <50%).
+- **🕒 Relative Timestamp Toggle**: Click the timestamp on any message to toggle between relative (`Just now`, `2m ago`) and absolute (`10:32 PM`) display modes.
+- **⌨️ Character Counter**: Real-time character counter in InputBar footer (`450/1000`) with amber warning color when approaching the 1,000 character limit.
+- **✓ Escalation Quick-Resolve**: One-click `Resolve` / `✓ Resolved` toggle action button in the Escalation Audit Table without leaving the analytics view.
+- **📊 GET /system/metrics Endpoint**: New backend route returning `total_vectors`, `python_version`, and `environment` for runtime health telemetry.
+- **✨ What's New Release Notes Modal**: Changelog modal accessible via `✨` header button listing all v2.5.0 and v2.4.0 platform features with versioned release cards.
+- **📈 Scroll Reading Progress Bar**: A thin `brand-500` progress bar at the top of ChatThread tracks exact scroll position percentage in real-time.
+- **🔢 Live System Metrics Panel in AdminDashboard**: `LiveMetricsPanel.jsx` fetches `/system/metrics` + `/health` and renders 4 animated counter cards that count up from zero with ease-out cubic animation. Auto-refreshes every 30s.
+
+### Advanced Features — v2.4.0 Feature Suite
 - **🍞 Global Toast Notification System**: Zero-dependency `ToastContext` and `ToastContainer` with auto-dismiss stack, slide-in animations, and 4 severity types (success, error, warning, info).
 - **📋 1-Click Copy-to-Clipboard**: Copy answer text instantly with visual `✓ Copied` state feedback and toast confirmation.
 - **⚡ End-to-End Latency Tracking**: Computes exact query response execution time in milliseconds and displays an `⚡ 420ms` latency pill in agent response bubbles.
 - **📊 Live Session Telemetry Stats Bar**: Header bar dynamically tracking turn counts, average latency, mean confidence percentage, and active escalation count.
-- **💡 Contextual Follow-Up Suggestions**: Smart follow-up prompt chips (`💡 How long does a refund take? →`) dynamically calculated based on answer topic keywords.
+- **💡 Contextual Follow-Up Suggestions**: Smart follow-up prompt chips dynamically calculated based on answer topic keywords.
 - **📥 Chat Transcript Export (TXT & JSON)**: 1-click download of conversation history formatted as a clean `.txt` document or structured `.json` payload with source citations and confidence metrics.
-- **⌨️ Keyboard Shortcuts Cheat Sheet**: Interactive hotkey modal triggered via **`?`** key or header button listing all application hotkeys (`Ctrl+F`, `Esc`, `Enter`, `Shift+Enter`).
+- **⌨️ Keyboard Shortcuts Cheat Sheet**: Interactive hotkey modal triggered via **`?`** key or header button listing all application hotkeys.
 - **⬇ Auto-Scroll Lock & Scroll-to-Latest Pill**: Pauses auto-scrolling when reading past messages and displays an animated floating `⬇ Scroll to latest` pill when scrolled up.
 - **👁 Inline Document Preview Modal**: Popover in Knowledge Base Manager allowing full text inspection, chunk count breakdown, and source metadata viewing.
-- **🏷️ AI Sentiment & Urgency Classifier**: Real-time **sentiment** and **urgency** badges powered by Gemini backend classifier:
-  - **Sentiment** → 😡 Frustrated · 🚨 Urgent · 💬 Inquiring · 😐 Neutral
-  - **Urgency** → 🔴 High Priority · 🟡 Medium Priority · 🟢 Low Priority
+- **🏷️ AI Sentiment & Urgency Classifier**: Real-time sentiment and urgency badges powered by Gemini backend classifier.
 - **🔍 Live Chat Message Search Bar**: Collapsible search bar in the chat thread (**`Ctrl+F`**) with real-time keyword matching and ring highlighting.
-- **📂 Drag-and-Drop Knowledge Base Uploader**: Interactive dropzone with animated hover states, multi-file validation, `.json` and `.txt` support, and pre-ingestion previews.
+- **📂 Drag-and-Drop Knowledge Base Uploader**: Interactive dropzone with animated hover states, multi-file validation, and pre-ingestion previews.
 - **🚨 Computed Escalation Severity Levels**: Categorizes audit log records into `Critical Severity` (🔴), `Warning` (🟡), and `Informational` (🟢).
-- **⏳ Multi-Stage Typing Indicator**: Animated thinking indicator cycling through operational stages (*"Searching vector index...", "Synthesizing with Gemini..."*).
+- **⏳ Multi-Stage Typing Indicator**: Animated thinking indicator cycling through operational stages.
 
 ---
 
@@ -41,7 +52,7 @@ A production-grade, AI-augmented Customer Support Agent and Telemetry Platform p
 - **Google Gemini API (`google-genai`)**: `gemini-2.5-flash` model for grounded answer generation, sentiment classification, and `text-embedding-004` for semantic vector embeddings.
 - **ChromaDB**: In-memory and persistent vector database for similarity search.
 - **Pydantic v2**: Strict data validation, schema enforcement, and settings management via `pydantic-settings`.
-- **Pytest**: Comprehensive test suite with **64 automated test cases** covering endpoints, session stats, sentiment classifier, memory stores, loggers, and RAG logic.
+- **Pytest**: Comprehensive test suite with **65 automated test cases** covering endpoints, session stats, sentiment classifier, memory stores, loggers, and RAG logic.
 
 ### Frontend
 - **React 19**: Modern UI library with functional components, context providers, and custom hooks.
