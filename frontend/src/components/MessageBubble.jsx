@@ -60,9 +60,22 @@ export default function MessageBubble({ message, sessionId, onSelectPrompt, isPi
     setTimeout(() => setCopied(false), 2000);
   };
 
-  const time = timestamp
+  const [showRelativeTime, setShowRelativeTime] = useState(true);
+
+  const formatRelativeTime = (ts) => {
+    if (!ts) return "";
+    const diffSec = Math.floor((new Date() - new Date(ts)) / 1000);
+    if (diffSec < 10) return "Just now";
+    if (diffSec < 60) return `${diffSec}s ago`;
+    if (diffSec < 3600) return `${Math.floor(diffSec / 60)}m ago`;
+    return `${Math.floor(diffSec / 3600)}h ago`;
+  };
+
+  const timeStr = timestamp
     ? new Date(timestamp).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })
     : "";
+
+  const timeDisplay = showRelativeTime ? formatRelativeTime(timestamp) || timeStr : timeStr;
 
   useEffect(() => {
     return () => {
@@ -310,7 +323,13 @@ export default function MessageBubble({ message, sessionId, onSelectPrompt, isPi
               </span>
             )}
 
-            <span className="text-xs text-surface-500">{time}</span>
+            <button
+              onClick={() => setShowRelativeTime((v) => !v)}
+              className="text-xs text-surface-500 hover:text-slate-300 font-mono transition-colors"
+              title="Click to toggle relative / exact time"
+            >
+              {timeDisplay}
+            </button>
           </div>
         </div>
       </div>
