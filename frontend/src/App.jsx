@@ -8,11 +8,13 @@ import AdminDashboard from "./components/AdminDashboard";
 import FeedbackDashboard from "./components/FeedbackDashboard";
 import SessionStats from "./components/SessionStats";
 import KeyboardShortcutsModal from "./components/KeyboardShortcutsModal";
+import WhatsNewModal from "./components/WhatsNewModal";
 import { useSoundContext } from "./context/SoundEffectsContext";
 
 export default function App() {
   const [activeTab, setActiveTab] = useState("chat"); // "chat" | "analytics" | "kb" | "feedback"
   const [isShortcutsOpen, setIsShortcutsOpen] = useState(false);
+  const [isWhatsNewOpen, setIsWhatsNewOpen] = useState(false);
   const { sessionId, resetSession } = useSession();
   const { isMuted, toggleMute, playSound } = useSoundContext();
   const { messages, isLoading, submit } = useChat(sessionId, playSound);
@@ -94,6 +96,15 @@ export default function App() {
               {isMuted ? "🔕" : "🔔"}
             </button>
 
+            {/* What's New Release Notes Button */}
+            <button
+              onClick={() => setIsWhatsNewOpen(true)}
+              className="p-1.5 rounded-xl bg-surface-900 border border-surface-700 hover:border-surface-600 text-surface-400 hover:text-brand-300 text-xs transition-colors"
+              title="What's New in v2.5.0"
+            >
+              ✨
+            </button>
+
             {/* Keyboard Shortcuts Trigger Button */}
             <button
               onClick={() => setIsShortcutsOpen(true)}
@@ -141,6 +152,12 @@ export default function App() {
         <KeyboardShortcutsModal
           isOpen={isShortcutsOpen}
           onClose={() => setIsShortcutsOpen(false)}
+        />
+
+        {/* What's New Release Notes Modal */}
+        <WhatsNewModal
+          isOpen={isWhatsNewOpen}
+          onClose={() => setIsWhatsNewOpen(false)}
         />
 
       </main>
