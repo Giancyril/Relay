@@ -8,6 +8,20 @@ import CustomDatePicker from "./CustomDatePicker";
 export default function EscalationTable({ records, search, setSearch, triggerType, setTriggerType, isLoading }) {
   const [selectedRecord, setSelectedRecord] = useState(null);
   const [selectedDate, setSelectedDate] = useState("");
+  const [resolvedIds, setResolvedIds] = useState(new Set());
+
+  const handleResolve = (idx, e) => {
+    e.stopPropagation();
+    setResolvedIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(idx)) {
+        next.delete(idx);
+      } else {
+        next.add(idx);
+      }
+      return next;
+    });
+  };
 
   const triggerOptions = [
     { label: "All Triggers", value: "all" },
@@ -204,7 +218,7 @@ export default function EscalationTable({ records, search, setSearch, triggerTyp
                     <td className="px-4 py-3 text-right font-mono text-surface-400">
                       {r.top_distance.toFixed(4)}
                     </td>
-                    <td className="px-4 py-3 text-center">
+                    <td className="px-4 py-3 text-center space-x-2">
                       <button
                         onClick={(e) => {
                           e.stopPropagation();
@@ -213,6 +227,16 @@ export default function EscalationTable({ records, search, setSearch, triggerTyp
                         className="text-brand-400 hover:text-brand-300 text-xs underline font-medium"
                       >
                         View
+                      </button>
+                      <button
+                        onClick={(e) => handleResolve(idx, e)}
+                        className={`text-xs font-medium px-2 py-0.5 rounded-lg border transition-colors ${
+                          resolvedIds.has(idx)
+                            ? "bg-emerald-950/60 border-emerald-700/60 text-emerald-300"
+                            : "bg-surface-700 hover:bg-surface-600 border-surface-600 text-surface-300"
+                        }`}
+                      >
+                        {resolvedIds.has(idx) ? "✓ Resolved" : "Resolve"}
                       </button>
                     </td>
                   </tr>
