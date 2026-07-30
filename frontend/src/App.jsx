@@ -8,12 +8,14 @@ import AdminDashboard from "./components/AdminDashboard";
 import FeedbackDashboard from "./components/FeedbackDashboard";
 import SessionStats from "./components/SessionStats";
 import KeyboardShortcutsModal from "./components/KeyboardShortcutsModal";
+import { useSoundContext } from "./context/SoundEffectsContext";
 
 export default function App() {
   const [activeTab, setActiveTab] = useState("chat"); // "chat" | "analytics" | "kb" | "feedback"
   const [isShortcutsOpen, setIsShortcutsOpen] = useState(false);
   const { sessionId, resetSession } = useSession();
   const { messages, isLoading, submit } = useChat(sessionId);
+  const { isMuted, toggleMute } = useSoundContext();
 
   useEffect(() => {
     function handleKeyDown(e) {
@@ -78,6 +80,19 @@ export default function App() {
                 {sessionId.slice(0, 14)}…
               </span>
             </div>
+
+            {/* Sound Mute Toggle Button */}
+            <button
+              onClick={toggleMute}
+              className={`p-1.5 rounded-xl border text-xs transition-colors ${
+                isMuted
+                  ? "bg-surface-900 border-surface-700 text-surface-500 hover:text-rose-400"
+                  : "bg-surface-900 border-surface-700 text-surface-400 hover:text-brand-300"
+              }`}
+              title={isMuted ? "Sound Muted — Click to Unmute" : "Sound On — Click to Mute"}
+            >
+              {isMuted ? "🔕" : "🔔"}
+            </button>
 
             {/* Keyboard Shortcuts Trigger Button */}
             <button
