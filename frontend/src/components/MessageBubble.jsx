@@ -4,6 +4,9 @@ import ConfidenceBar from "./ConfidenceBar";
 import SourcesAccordion from "./SourcesAccordion";
 import FeedbackButtons from "./FeedbackButtons";
 import { useToastContext } from "../context/ToastContext";
+import { useSoundContext } from "../context/SoundEffectsContext";
+
+const REACTION_EMOJIS = ["👍", "❤️", "🔥", "😄", "🤔"];
 
 /**
  * MessageBubble — renders a single message in the chat thread.
@@ -12,7 +15,24 @@ export default function MessageBubble({ message, sessionId, onSelectPrompt }) {
   const { role, text, escalated, confidence_score, sources, timestamp, originalQuestion, sentiment, urgency, responseTimeMs } = message;
   const [isPlaying, setIsPlaying] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [reactions, setReactions] = useState({}); // { emoji: count }
+  const [showReactionPicker, setShowReactionPicker] = useState(false);
   const { showToast } = useToastContext();
+  const { playSound } = useSoundContext();
+
+  const handleReaction = (emoji) => {
+    setReactions((prev) => {
+      const current = prev[emoji] || 0;
+      if (current > 0) {
+        const next = { ...prev };
+        delete next[emoji];
+        return next;
+      }
+      return { ...prev, [emoji]: 1 };
+    });
+    playSound("click");
+    setShowReactionPicker(false);
+  };
 
   // Helper to derive smart follow-up suggestions based on response content
   const followUps = (() => {
@@ -191,6 +211,49 @@ export default function MessageBubble({ message, sessionId, onSelectPrompt }) {
                 <span className="text-surface-500 group-hover:text-brand-400">→</span>
               </button>
             ))}
+          </div>
+        )}
+
+        {/* Emoji Reaction Row */}
+        {role === "agent" && (
+          <div className="flex items-center gap-2 mt-2">
+            {/* Active reactions */}
+            {Object.entries(reactions).map(([emoji, count]) => (
+              <button
+                key={emoji}
+                onClick={() => handleReaction(emoji)}
+                className="flex items-center gap-1 text-xs bg-brand-900/40 border border-brand-700/50 text-brand-200 px-2 py-0.5 rounded-full hover:bg-brand-800/50 transition-colors"
+              >
+                <span>{emoji}</span>
+                <span className="font-mono text-[10px]">{count}</span>
+              </button>
+            ))}
+
+            {/* Add reaction picker trigger */}
+            <div className="relative">
+              <button
+                onClick={() => setShowReactionPicker((v) => !v)}
+                className="text-xs text-surface-500 hover:text-brand-300 w-6 h-6 flex items-center justify-center rounded-full hover:bg-surface-700 transition-colors"
+                title="React to this message"
+              >
+                😊
+              </button>
+              {showReactionPicker && (
+                <div className="absolute bottom-full mb-1 left-0 flex items-center gap-1 bg-surface-800 border border-surface-600 rounded-xl px-2 py-1.5 shadow-xl z-10">
+                  {REACTION_EMOJIS.map((emoji) => (
+                    <button
+                      key={emoji}
+                      onClick={() => handleReaction(emoji)}
+                      className={`text-base transition-transform hover:scale-125 ${
+                        reactions[emoji] ? "opacity-50" : ""
+                      }`}
+                    >
+                      {emoji}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
           </div>
         )}
 
