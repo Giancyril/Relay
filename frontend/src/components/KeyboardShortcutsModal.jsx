@@ -27,11 +27,10 @@ export default function KeyboardShortcutsModal({ isOpen, onClose }) {
   return (
     <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4 z-[999]">
       <div className="bg-surface-800 border border-surface-600 rounded-2xl max-w-md w-full p-6 shadow-2xl space-y-4">
-        
+
         {/* Header */}
         <div className="flex items-center justify-between border-b border-surface-700 pb-3">
           <div className="flex items-center gap-2">
-            <span className="text-brand-400 text-lg">⌨️</span>
             <h3 className="text-sm font-semibold text-slate-100">Keyboard Shortcuts</h3>
           </div>
           <button onClick={onClose} className="text-surface-400 hover:text-slate-200 text-sm">

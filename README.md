@@ -11,36 +11,36 @@ A production-grade, AI-augmented Customer Support Agent and Telemetry Platform p
 - **Multi-Turn Conversation Memory**: Maintains session-aware context (capped to recent turns) to handle follow-up questions naturally.
 - **Hybrid Confidence & Escalation Engine**: Dual-layer decision mechanism evaluating vector distance metrics and LLM uncertainty phrases (`"I don't have enough information..."`) to flag unanswerable or ambiguous queries for human review.
 - **Automated Escalation Logging**: Persists low-confidence and escalated queries into a structured JSONL audit log with query metadata, distance scores, and answer previews.
-- **User Feedback & CSAT Scoring**: Inline 👍 / 👎 rating controls under every agent message with optional comment popovers and live Customer Satisfaction (CSAT %) score calculations.
+- **User Feedback & CSAT Scoring**: Inline rating controls under every agent message with optional comment popovers and live Customer Satisfaction (CSAT %) score calculations.
 
 ### Advanced Features — v2.5.0 Feature Suite (12 New Commits)
-- **🎵 Web Audio API Sound Effects Engine**: Synthesized audio feedback (`useSoundEffects` + `SoundEffectsContext`) for send, receive, error, and click events. Zero external dependencies, uses `AudioContext` oscillators. Mute toggle (🔔/🔕) persisted in `localStorage`.
-- **😊 Emoji Message Reactions**: Interactive emoji picker (👍 ❤️ 🔥 😄 🤔) on every AI agent response bubble, with toggle-on/off count badges and audio click feedback.
-- **📌 Pinned Messages System**: Pin key agent answers with `usePinnedMessages` hook. Pinned messages display an amber glow ring ring and remain visually differentiated in the thread.
-- **🎯 Animated SVG Confidence Ring**: New `ConfidenceRing.jsx` component renders an animated circular progress arc beside the confidence bar with color-coded zones (🟢 ≥80%, 🟡 ≥50%, 🔴 <50%).
-- **🕒 Relative Timestamp Toggle**: Click the timestamp on any message to toggle between relative (`Just now`, `2m ago`) and absolute (`10:32 PM`) display modes.
-- **⌨️ Character Counter**: Real-time character counter in InputBar footer (`450/1000`) with amber warning color when approaching the 1,000 character limit.
-- **✓ Escalation Quick-Resolve**: One-click `Resolve` / `✓ Resolved` toggle action button in the Escalation Audit Table without leaving the analytics view.
-- **📊 GET /system/metrics Endpoint**: New backend route returning `total_vectors`, `python_version`, and `environment` for runtime health telemetry.
-- **✨ What's New Release Notes Modal**: Changelog modal accessible via `✨` header button listing all v2.5.0 and v2.4.0 platform features with versioned release cards.
-- **📈 Scroll Reading Progress Bar**: A thin `brand-500` progress bar at the top of ChatThread tracks exact scroll position percentage in real-time.
-- **🔢 Live System Metrics Panel in AdminDashboard**: `LiveMetricsPanel.jsx` fetches `/system/metrics` + `/health` and renders 4 animated counter cards that count up from zero with ease-out cubic animation. Auto-refreshes every 30s.
+- ** Web Audio API Sound Effects Engine**: Synthesized audio feedback (`useSoundEffects` + `SoundEffectsContext`) for send, receive, error, and click events. Zero external dependencies, uses `AudioContext` oscillators. Mute toggle persisted in `localStorage`.
+- ** Emoji Message Reactions**: Interactive emoji picker on every AI agent response bubble, with toggle-on/off count badges and audio click feedback.
+- ** Pinned Messages System**: Pin key agent answers with `usePinnedMessages` hook. Pinned messages display an amber glow ring ring and remain visually differentiated in the thread.
+- ** Animated SVG Confidence Ring**: New `ConfidenceRing.jsx` component renders an animated circular progress arc beside the confidence bar with color-coded zones (🟢 ≥80%, 🟡 ≥50%, 🔴 <50%).
+- ** Relative Timestamp Toggle**: Click the timestamp on any message to toggle between relative (`Just now`, `2m ago`) and absolute (`10:32 PM`) display modes.
+- **⌨ Character Counter**: Real-time character counter in InputBar footer (`450/1000`) with amber warning color when approaching the 1,000 character limit.
+- ** Escalation Quick-Resolve**: One-click `Resolve` / `✓ Resolved` toggle action button in the Escalation Audit Table without leaving the analytics view.
+- ** GET /system/metrics Endpoint**: New backend route returning `total_vectors`, `python_version`, and `environment` for runtime health telemetry.
+- ** What's New Release Notes Modal**: Changelog modal accessible via header button listing all v2.5.0 and v2.4.0 platform features with versioned release cards.
+- ** Scroll Reading Progress Bar**: A thin `brand-500` progress bar at the top of ChatThread tracks exact scroll position percentage in real-time.
+- ** Live System Metrics Panel in AdminDashboard**: `LiveMetricsPanel.jsx` fetches `/system/metrics` + `/health` and renders 4 animated counter cards that count up from zero with ease-out cubic animation. Auto-refreshes every 30s.
 
 ### Advanced Features — v2.4.0 Feature Suite
-- **🍞 Global Toast Notification System**: Zero-dependency `ToastContext` and `ToastContainer` with auto-dismiss stack, slide-in animations, and 4 severity types (success, error, warning, info).
-- **📋 1-Click Copy-to-Clipboard**: Copy answer text instantly with visual `✓ Copied` state feedback and toast confirmation.
-- **⚡ End-to-End Latency Tracking**: Computes exact query response execution time in milliseconds and displays an `⚡ 420ms` latency pill in agent response bubbles.
-- **📊 Live Session Telemetry Stats Bar**: Header bar dynamically tracking turn counts, average latency, mean confidence percentage, and active escalation count.
-- **💡 Contextual Follow-Up Suggestions**: Smart follow-up prompt chips dynamically calculated based on answer topic keywords.
-- **📥 Chat Transcript Export (TXT & JSON)**: 1-click download of conversation history formatted as a clean `.txt` document or structured `.json` payload with source citations and confidence metrics.
-- **⌨️ Keyboard Shortcuts Cheat Sheet**: Interactive hotkey modal triggered via **`?`** key or header button listing all application hotkeys.
-- **⬇ Auto-Scroll Lock & Scroll-to-Latest Pill**: Pauses auto-scrolling when reading past messages and displays an animated floating `⬇ Scroll to latest` pill when scrolled up.
-- **👁 Inline Document Preview Modal**: Popover in Knowledge Base Manager allowing full text inspection, chunk count breakdown, and source metadata viewing.
-- **🏷️ AI Sentiment & Urgency Classifier**: Real-time sentiment and urgency badges powered by Gemini backend classifier.
-- **🔍 Live Chat Message Search Bar**: Collapsible search bar in the chat thread (**`Ctrl+F`**) with real-time keyword matching and ring highlighting.
-- **📂 Drag-and-Drop Knowledge Base Uploader**: Interactive dropzone with animated hover states, multi-file validation, and pre-ingestion previews.
-- **🚨 Computed Escalation Severity Levels**: Categorizes audit log records into `Critical Severity` (🔴), `Warning` (🟡), and `Informational` (🟢).
-- **⏳ Multi-Stage Typing Indicator**: Animated thinking indicator cycling through operational stages.
+- ** Global Toast Notification System**: Zero-dependency `ToastContext` and `ToastContainer` with auto-dismiss stack, slide-in animations, and 4 severity types (success, error, warning, info).
+- ** 1-Click Copy-to-Clipboard**: Copy answer text instantly with visual `✓ Copied` state feedback and toast confirmation.
+- ** End-to-End Latency Tracking**: Computes exact query response execution time in milliseconds and displays an ` 420ms` latency pill in agent response bubbles.
+- ** Live Session Telemetry Stats Bar**: Header bar dynamically tracking turn counts, average latency, mean confidence percentage, and active escalation count.
+- ** Contextual Follow-Up Suggestions**: Smart follow-up prompt chips dynamically calculated based on answer topic keywords.
+- ** Chat Transcript Export (TXT & JSON)**: 1-click download of conversation history formatted as a clean `.txt` document or structured `.json` payload with source citations and confidence metrics.
+- **⌨ Keyboard Shortcuts Cheat Sheet**: Interactive hotkey modal triggered via **`?`** key or header button listing all application hotkeys.
+- ** Auto-Scroll Lock & Scroll-to-Latest Pill**: Pauses auto-scrolling when reading past messages and displays an animated floating `⬇ Scroll to latest` pill when scrolled up.
+- ** Inline Document Preview Modal**: Popover in Knowledge Base Manager allowing full text inspection, chunk count breakdown, and source metadata viewing.
+- ** AI Sentiment & Urgency Classifier**: Real-time sentiment and urgency badges powered by Gemini backend classifier.
+- ** Live Chat Message Search Bar**: Collapsible search bar in the chat thread (**`Ctrl+F`**) with real-time keyword matching and ring highlighting.
+- ** Drag-and-Drop Knowledge Base Uploader**: Interactive dropzone with animated hover states, multi-file validation, and pre-ingestion previews.
+- ** Computed Escalation Severity Levels**: Categorizes audit log records into `Critical Severity` (🔴), `Warning` (🟡), and `Informational` (🟢).
+- ** Multi-Stage Typing Indicator**: Animated thinking indicator cycling through operational stages.
 
 ---
 
