@@ -11,7 +11,7 @@ const REACTION_EMOJIS = ["👍", "❤️", "🔥", "😄", "🤔"];
 /**
  * MessageBubble — renders a single message in the chat thread.
  */
-export default function MessageBubble({ message, sessionId, onSelectPrompt }) {
+export default function MessageBubble({ message, sessionId, onSelectPrompt, isPinned, onTogglePin }) {
   const { role, text, escalated, confidence_score, sources, timestamp, originalQuestion, sentiment, urgency, responseTimeMs } = message;
   const [isPlaying, setIsPlaying] = useState(false);
   const [copied, setCopied] = useState(false);
@@ -266,6 +266,20 @@ export default function MessageBubble({ message, sessionId, onSelectPrompt }) {
           />
 
           <div className="flex items-center gap-3">
+            {/* Pin Button */}
+            {typeof onTogglePin === "function" && (
+              <button
+                onClick={() => onTogglePin(message.id)}
+                className={`flex items-center gap-1 text-xs transition-colors ${
+                  isPinned ? "text-amber-400 font-medium" : "text-surface-400 hover:text-slate-200"
+                }`}
+                title={isPinned ? "Unpin message" : "Pin message to top"}
+              >
+                <span>📌</span>
+                <span>{isPinned ? "Pinned" : "Pin"}</span>
+              </button>
+            )}
+
             {/* Copy Button */}
             <button
               onClick={handleCopy}

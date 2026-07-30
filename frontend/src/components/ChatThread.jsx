@@ -2,6 +2,7 @@ import { useEffect, useRef, useState, useMemo } from "react";
 import MessageBubble from "./MessageBubble";
 import TypingIndicator from "./TypingIndicator";
 import { useChatExport } from "../hooks/useChatExport";
+import { usePinnedMessages } from "../hooks/usePinnedMessages";
 
 /**
  * ChatThread — scrollable message list with an optional pinned search bar.
@@ -15,6 +16,7 @@ export default function ChatThread({ messages, isLoading, sessionId, onSelectPro
   const [searchQuery, setSearchQuery] = useState("");
   const [isAtBottom, setIsAtBottom] = useState(true);
   const { exportAsTxt, exportAsJson } = useChatExport(messages, sessionId);
+  const { pinnedIds, togglePin } = usePinnedMessages();
 
   const scrollToBottom = () => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -173,14 +175,22 @@ export default function ChatThread({ messages, isLoading, sessionId, onSelectPro
           <div
             key={msg.id}
             className={`transition-all duration-200 ${
-              normalizedQuery && matchIds.has(msg.id)
+              pinnedIds.has(msg.id)
+                ? "ring-1 ring-amber-500/50 rounded-2xl bg-amber-500/5"
+                : normalizedQuery && matchIds.has(msg.id)
                 ? "ring-1 ring-brand-500/40 rounded-2xl bg-brand-500/5"
                 : normalizedQuery && !matchIds.has(msg.id) && msg.text
                 ? "opacity-30"
                 : ""
             }`}
           >
-            <MessageBubble message={msg} sessionId={sessionId} onSelectPrompt={onSelectPrompt} />
+            <MessageBubble
+              message={msg}
+              sessionId={sessionId}
+              onSelectPrompt={onSelectPrompt}
+              isPinned={pinnedIds.has(msg.id)}
+              onTogglePin={togglePin}
+            />
           </div>
         ))}
 
