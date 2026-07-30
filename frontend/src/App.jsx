@@ -14,8 +14,8 @@ export default function App() {
   const [activeTab, setActiveTab] = useState("chat"); // "chat" | "analytics" | "kb" | "feedback"
   const [isShortcutsOpen, setIsShortcutsOpen] = useState(false);
   const { sessionId, resetSession } = useSession();
-  const { messages, isLoading, submit } = useChat(sessionId);
-  const { isMuted, toggleMute } = useSoundContext();
+  const { isMuted, toggleMute, playSound } = useSoundContext();
+  const { messages, isLoading, submit } = useChat(sessionId, playSound);
 
   useEffect(() => {
     function handleKeyDown(e) {

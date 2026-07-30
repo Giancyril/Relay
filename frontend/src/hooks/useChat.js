@@ -2,13 +2,13 @@
  * useChat.js — manages message thread, API calls, loading, and error state.
  *
  * Message shape:
- *   { id, role: "user"|"agent"|"error", text, escalated, confidence_score, sources, timestamp, sentiment, urgency }
+ *   { id, role: "user"|"agent"|"error", text, escalated, confidence_score, sources, timestamp, sentiment, urgency, responseTimeMs }
  */
 
 import { useState, useCallback } from "react";
 import { sendMessage } from "../api/chatApi";
 
-export function useChat(sessionId) {
+export function useChat(sessionId, onPlaySound) {
   const [messages, setMessages] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -27,6 +27,7 @@ export function useChat(sessionId) {
       // Add user message immediately
       addMessage({ role: "user", text: trimmed });
       setIsLoading(true);
+      onPlaySound?.("send");
 
       const startTime = performance.now();
       try {
@@ -43,17 +44,19 @@ export function useChat(sessionId) {
           responseTimeMs: elapsedMs,
           originalQuestion: trimmed,  // passed to FeedbackButtons
         });
+        onPlaySound?.("receive");
       } catch (err) {
         addMessage({
           role: "error",
           text: err.message || "Something went wrong. Please try again.",
           originalQuestion: trimmed,
         });
+        onPlaySound?.("error");
       } finally {
         setIsLoading(false);
       }
     },
-    [sessionId, addMessage]
+    [sessionId, addMessage, onPlaySound]
   );
 
   return { messages, isLoading, submit };
