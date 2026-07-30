@@ -5,6 +5,7 @@ import MetricCard from "./MetricCard";
 import EscalationTable from "./EscalationTable";
 import DocumentList from "./DocumentList";
 import RagSettingsPanel from "./RagSettingsPanel";
+import LiveMetricsPanel from "./LiveMetricsPanel";
 
 /**
  * AdminDashboard — main container for Admin view (Analytics & KB Management).
@@ -191,6 +192,9 @@ export default function AdminDashboard({ initialTab = "analytics" }) {
             setTriggerType={setTriggerType}
             isLoading={isLoading}
           />
+
+          {/* Live System Metrics Panel */}
+          <LiveMetricsPanel />
 
           {/* RAG Tuning & Guardrails Settings Panel */}
           <RagSettingsPanel />
