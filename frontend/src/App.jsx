@@ -86,32 +86,50 @@ export default function App() {
             {/* Sound Mute Toggle Button */}
             <button
               onClick={toggleMute}
-              className={`p-1.5 rounded-xl border text-xs transition-colors ${
+              className={`p-1.5 rounded-lg border transition-colors ${
                 isMuted
-                  ? "bg-surface-900 border-surface-700 text-surface-500 hover:text-rose-400"
-                  : "bg-surface-900 border-surface-700 text-surface-400 hover:text-brand-300"
+                  ? "border-surface-700 text-surface-500 hover:text-slate-300"
+                  : "border-surface-700 text-surface-400 hover:text-slate-200"
               }`}
               title={isMuted ? "Sound Muted — Click to Unmute" : "Sound On — Click to Mute"}
             >
-              {isMuted ? "🔕" : "🔔"}
+              {isMuted ? (
+                <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M9 9v6l-4-3H3a1 1 0 01-1-1v-2a1 1 0 011-1h2l4-3z" />
+                  <line x1="17" y1="9" x2="23" y2="15" />
+                  <line x1="23" y1="9" x2="17" y2="15" />
+                </svg>
+              ) : (
+                <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round">
+                  <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" />
+                  <path d="M19.07 4.93a10 10 0 010 14.14M15.54 8.46a5 5 0 010 7.07" />
+                </svg>
+              )}
             </button>
 
             {/* What's New Release Notes Button */}
             <button
               onClick={() => setIsWhatsNewOpen(true)}
-              className="p-1.5 rounded-xl bg-surface-900 border border-surface-700 hover:border-surface-600 text-surface-400 hover:text-brand-300 text-xs transition-colors"
+              className="p-1.5 rounded-lg border border-surface-700 text-surface-400 hover:text-slate-200 transition-colors"
               title="What's New in v2.5.0"
             >
-              ✨
+              <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round">
+                <circle cx="12" cy="12" r="10" />
+                <line x1="12" y1="8" x2="12" y2="12" />
+                <line x1="12" y1="16" x2="12.01" y2="16" />
+              </svg>
             </button>
 
             {/* Keyboard Shortcuts Trigger Button */}
             <button
               onClick={() => setIsShortcutsOpen(true)}
-              className="p-1.5 rounded-xl bg-surface-900 border border-surface-700 hover:border-surface-600 text-surface-400 hover:text-brand-300 text-xs transition-colors"
-              title="Keyboard Shortcuts Cheat Sheet (?)"
+              className="p-1.5 rounded-lg border border-surface-700 text-surface-400 hover:text-slate-200 transition-colors"
+              title="Keyboard Shortcuts (?)"
             >
-              ⌨️
+              <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round">
+                <rect x="2" y="6" width="20" height="13" rx="2" />
+                <path d="M6 10h.01M10 10h.01M14 10h.01M18 10h.01M8 14h8" />
+              </svg>
             </button>
 
             {/* Quick action: New Chat */}
