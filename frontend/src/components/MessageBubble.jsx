@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import EscalationBadge from "./EscalationBadge";
 import ConfidenceBar from "./ConfidenceBar";
+import ConfidenceRing from "./ConfidenceRing";
 import SourcesAccordion from "./SourcesAccordion";
 import FeedbackButtons from "./FeedbackButtons";
 import { useToastContext } from "../context/ToastContext";
@@ -197,9 +198,14 @@ export default function MessageBubble({ message, sessionId, onSelectPrompt, isPi
           </div>
         )}
 
-        {/* Confidence bar */}
+        {/* Confidence bar & ring */}
         {typeof confidence_score === "number" && (
-          <ConfidenceBar score={confidence_score} />
+          <div className="flex items-center gap-3 mt-1">
+            <ConfidenceRing score={confidence_score} />
+            <div className="flex-1">
+              <ConfidenceBar score={confidence_score} />
+            </div>
+          </div>
         )}
 
         {/* Escalation badge */}
