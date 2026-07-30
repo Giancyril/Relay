@@ -1,6 +1,7 @@
 import json
 import logging
 import os
+import sys
 
 from fastapi import APIRouter, HTTPException, status
 
@@ -9,7 +10,8 @@ from app.api.schemas import (
     IngestRequest, IngestResponse,
     HealthResponse, AnalyticsSummaryResponse, TopSourceCount,
     DocumentSummary, DocumentListResponse,
-    FeedbackRequest, FeedbackSummaryResponse, SessionStatsResponse
+    FeedbackRequest, FeedbackSummaryResponse, SessionStatsResponse,
+    SystemMetricsResponse
 )
 from app.config import settings
 from app.core.chromadb_client import ChromaDBClient
@@ -50,6 +52,24 @@ async def health_check():
         chromadb_status=chroma_status,
         chromadb_doc_count=doc_count,
         gemini_api_configured=gemini_configured,
+    )
+
+
+@router.get("/system/metrics", response_model=SystemMetricsResponse, tags=["Health"])
+async def system_metrics():
+    """Returns low-level platform runtime metrics."""
+    doc_count = 0
+    try:
+        col = ChromaDBClient().get_or_create_collection()
+        doc_count = col.count()
+    except Exception:
+        pass
+
+    return SystemMetricsResponse(
+        status="operational",
+        total_vectors=doc_count,
+        environment=settings.environment,
+        python_version=f"{sys.version_info.major}.{sys.version_info.minor}.{sys.version_info.micro}"
     )
 
 

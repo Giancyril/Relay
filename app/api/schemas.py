@@ -38,6 +38,13 @@ class SessionStatsResponse(BaseModel):
     active_turns: List[dict] = []
 
 
+class SystemMetricsResponse(BaseModel):
+    status: str
+    total_vectors: int
+    environment: str
+    python_version: str
+
+
 # Ingestion Schemas
 class DocumentInput(BaseModel):
     doc_id: str = Field(..., json_schema_extra={"example": "faq_returns_01"})

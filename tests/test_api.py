@@ -24,6 +24,14 @@ class TestHealthEndpoint:
         assert "chromadb_doc_count" in data
         assert "gemini_api_configured" in data
 
+    def test_system_metrics_returns_200_and_operational(self, client: TestClient):
+        response = client.get("/system/metrics")
+        assert response.status_code == 200
+        data = response.json()
+        assert data["status"] == "operational"
+        assert "total_vectors" in data
+        assert "python_version" in data
+
 
 class TestChatEndpoint:
 
